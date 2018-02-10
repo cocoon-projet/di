@@ -168,6 +168,12 @@ class Container implements ContainerInterface
                              '@singleton' => true]);
     }
 
+    /**
+     * initialise un service Lazy Injection
+     *
+     * @param object $class ex: ClassName::class
+     * @param array $params arguments de contructeur
+     */
     public function lazy($class, $params = [])
     {
         if (count($params) > 0) {
