@@ -172,7 +172,7 @@ class Container implements ContainerInterface
      * initialise un service Lazy Injection
      *
      * @param object $class ex: ClassName::class
-     * @param array $params arguments de contructeur
+     * @param array $params arguments du contructeur
      */
     public function lazy($class, $params = [])
     {
