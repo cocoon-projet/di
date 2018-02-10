@@ -1,0 +1,28 @@
+{
+    "name": "cocoon-projet/di",
+    "type": "library",
+    "description": "Un simple et léger containeur d'injection de dépendances",
+    "keywords": ["di", "container", "dependency", "injection", "services", "definition", "psr-11"],
+    "homepage": "http://www.cocoon-projet/components/di",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.0.10",
+        "container-interop/container-interop": "^1.2",
+        "ocramius/proxy-manager": "^2.1"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "3.*",
+        "phpunit/phpunit": "^6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cocoon\\" : "src/Cocoon/",
+            "Core\\" : "app/Core"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Injection\\": "tests/Injection/"
+        }
+    }
+}
