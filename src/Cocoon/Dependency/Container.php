@@ -82,7 +82,8 @@ class Container implements ContainerInterface
      *
      * @param string $alias alias du service
      * @param string|array $service
-     * Clefs réservées array(@class, @singleton, @constructor, @methods, @factory, @arguments, @lazy) définition du service
+     * Clefs réservées array(@class, @singleton, @constructor, @methods, @factory, @arguments, @lazy)
+     * définition du service
      * @return self
      */
     public function bind($alias, $service = null) :self

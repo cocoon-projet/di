@@ -19,7 +19,13 @@ trait ProxyManagerContainerTrait
             throw new ContainerException('l\'alias doit être une classe ex: ClassName::class');
         }
         $factory = new LazyLoadingValueHolderFactory();
-        $initializer = function (& $wrappedObject, LazyLoadingInterface $proxy, $method, array $parameters, & $initializer) use ($alias) {
+        $initializer = function (
+            & $wrappedObject,
+            LazyLoadingInterface $proxy,
+            $method,
+            array $parameters,
+            & $initializer
+        ) use ($alias) {
             $initializer   = null; // disable initialization
             $wrappedObject = $this->makeInstance($alias); // fill your object with values here
 
