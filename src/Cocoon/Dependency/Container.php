@@ -127,7 +127,7 @@ class Container implements ContainerInterface
         if (isset($callable[1])) {
             $class = new ReflectionClass($callable[0]);
             if ($class->isInstantiable() && !$class->getMethod($callable[1])->isStatic()) {
-                $handler = [new $callable[0], $callable[1]];
+                $handler = ($this->has($callable[0])) ? [$this->get(new $callable[0]), $callable[1]] : [new $callable[0], $callable[1]];
             } else {
                 $handler = [$callable[0], $callable[1]];
             }

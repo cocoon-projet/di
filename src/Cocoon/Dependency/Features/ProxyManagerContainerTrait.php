@@ -13,7 +13,7 @@ use ProxyManager\Proxy\LazyLoadingInterface;
  */
 trait ProxyManagerContainerTrait
 {
-    public function createProxy($alias)
+    public function createProxy($alias, $object)
     {
         if (!class_exists($alias)) {
             throw new ContainerException('l\'alias doit être une classe ex: ClassName::class');
@@ -25,9 +25,9 @@ trait ProxyManagerContainerTrait
             $method,
             array $parameters,
             & $initializer
-        ) use ($alias) {
+        ) use ($alias, $object) {
             $initializer   = null; // disable initialization
-            $wrappedObject = $this->makeInstance($alias); // fill your object with values here
+            $wrappedObject = $object; // fill your object with values here
 
             return true; // confirm that initialization occurred correctly
         };

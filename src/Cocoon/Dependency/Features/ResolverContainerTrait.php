@@ -40,12 +40,12 @@ trait ResolverContainerTrait
             } elseif (!class_exists($alias) && !isset($this->services[$alias]['@class'])) {
                 return $this->services[$alias];
             }
+            $instance = $this->makeInstance($alias);
             //------- lazy injection -----------
             if ($this->isLazy($alias)) {
-                return $this->createProxy($alias);
+                return $this->createProxy($alias, $instance);
             }
             //-----------------------
-            $instance = $this->makeInstance($alias);
 
             if ($this->hasOption($alias, '@singleton') && !$this->isSingleton($alias)) {
                 $this->putInCache($alias, $instance);
