@@ -175,12 +175,12 @@ class Container implements ContainerInterface
      * @param object $class ex: ClassName::class
      * @param array $params arguments du contructeur
      */
-    public function lazy($class, $params = [])
+    public function lazy($class, $params = []) :self
     {
         if (count($params) > 0) {
-            $this->bind($class, ['@lazy' => true, '@constructor' => $params]);
+            return $this->bind($class, ['@lazy' => true, '@constructor' => $params]);
         } else {
-            $this->bind($class, ['@lazy' => true ]);
+            return $this->bind($class, ['@lazy' => true ]);
         }
     }
 
