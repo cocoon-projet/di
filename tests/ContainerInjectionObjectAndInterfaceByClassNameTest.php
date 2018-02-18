@@ -38,18 +38,6 @@ class ContainerInjectionObjectAndInterfaceByClassNameTest extends TestCase
         $this->assertEquals('Napoleon', $test->getName());
     }
 
-    public function testInjectByFactoryMethod()
-    {
-        $test = $this->service->get(ItemController::class);
-        $this->assertEquals('factory ', $test);
-    }
-
-    public function testInjectByFactoryMethodAndParam()
-    {
-        $test = $this->service->get('item.class');
-        $this->assertEquals('factory rasmus', $test);
-    }
-
     public function testInjectClassParamIntoConstructor()
     {
         $test = $this->service->get(BlogController::class)->index();

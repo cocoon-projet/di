@@ -127,7 +127,8 @@ class Container implements ContainerInterface
         if (isset($callable[1])) {
             $class = new ReflectionClass($callable[0]);
             if ($class->isInstantiable() && !$class->getMethod($callable[1])->isStatic()) {
-                $handler = ($this->has($callable[0])) ? [$this->get($callable[0]), $callable[1]] : [new $callable[0], $callable[1]];
+                $handler = ($this->has($callable[0])) ? [$this->get($callable[0]), $callable[1]]
+                    : [new $callable[0], $callable[1]];
             } else {
                 $handler = [$callable[0], $callable[1]];
             }
@@ -174,6 +175,7 @@ class Container implements ContainerInterface
      *
      * @param object $class ex: ClassName::class
      * @param array $params arguments du contructeur
+     * @return Container
      */
     public function lazy($class, $params = []) :self
     {

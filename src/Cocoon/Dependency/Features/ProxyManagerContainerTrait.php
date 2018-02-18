@@ -13,6 +13,15 @@ use ProxyManager\Proxy\LazyLoadingInterface;
  */
 trait ProxyManagerContainerTrait
 {
+    /**
+     * Création d'un Objet Proxy. Le Proxy instanciera l'objet
+     * d'origine uniquement si nécessaire.
+     *
+     * @see https://ocramius.github.io/ProxyManager/docs/lazy-loading-value-holder.html
+     * @see https://github.com/Ocramius/ProxyManager
+     * @param $alias une classe php  ex: ClassName::class
+     * @return \ProxyManager\Proxy\VirtualProxyInterface
+     */
     public function createProxy($alias)
     {
         if (!class_exists($alias)) {
@@ -27,13 +36,20 @@ trait ProxyManagerContainerTrait
             & $initializer
         ) use ($alias) {
             $initializer   = null; // disable initialization
-            $wrappedObject = $this->makeInstance($alias);; // fill your object with values here
+            $wrappedObject = $this->makeInstance($alias);
+            ; // fill your object with values here
 
             return true; // confirm that initialization occurred correctly
         };
         return $factory->createProxy($alias, $initializer);
     }
 
+    /**
+     * Verifie si la classe (object service) doit êlre lazy loader
+     *
+     * @param $alias un classe php
+     * @return bool
+     */
     protected function isLazy($alias)
     {
         return isset($this->services[$alias]['@lazy']);
