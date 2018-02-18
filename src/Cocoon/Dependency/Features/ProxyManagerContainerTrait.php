@@ -22,7 +22,7 @@ trait ProxyManagerContainerTrait
      * @param $alias une classe php  ex: ClassName::class
      * @return \ProxyManager\Proxy\VirtualProxyInterface
      */
-    public function createProxy($alias)
+    protected function createProxy($alias)
     {
         if (!class_exists($alias)) {
             throw new ContainerException('l\'alias doit être une classe ex: ClassName::class');

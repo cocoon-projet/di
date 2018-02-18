@@ -72,7 +72,7 @@ trait AutowireContainerTrait
      * @return array
      * @throws \ReflectionException
      */
-    public function resolveInjection($parameters = [], $vars = []) :array
+    protected function resolveInjection($parameters = [], $vars = []) :array
     {
         $params = [];
         foreach ($parameters as $param) {
