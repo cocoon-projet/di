@@ -142,7 +142,7 @@ class Container implements ContainerInterface
 
     /**
      * initialise un service a partir d'une classe et sa méthode
-     * simple, static ou une classe avec la méthode __invoke()
+     * méthode, méthode static ou une classe avec la méthode __invoke()
      *
      * @param string $alias
      * @param array $callable
