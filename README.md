@@ -1,6 +1,7 @@
 ## A Propos
 
-cocoon-projet/di est un conteneur d'injection de dépendance très léger et très simple à utiliser.
+* cocoon-projet/di est un conteneur d'injection de dépendance très léger et très simple à utiliser.
+* cocoon-di est conforme au **standard psr-11**
 
 ## Pré-requis
 
@@ -32,7 +33,9 @@ $port = $di->get('db.port'); // 3306
 
 $config = $di->get('app.config'); // array('mode' => 'production', 'debug' => false)
 
-echo $config['mode']; // production
+var_dump($dsn == 'mysql:host=localhost;dbname=testdb'); // true
+var_dump($port == 3306); // true
+var_dump($config['mode'] == 'production'); // true
 ```
 #### object injection
 
@@ -55,7 +58,7 @@ use App\Services\Persons;
 
 $di = Container::getInstance();
 
-$di->bind('ma_class', 'App\Servives\Persons');
+$di->bind('ma_class', 'App\Services\Persons');
 // ou
 $di->bind('ma_class', Persons::class);
 // ou
@@ -63,7 +66,31 @@ $di->bind(Persons::class);
 
 // Retourner le service
 
-$service = $di->get('ma_class');
+$service1 = $di->get('ma_class');
+$service2 = $di->get('ma_class');
 // ou
-$service = $di->get(Persons::class);
+$service3 = $di->get(Persons::class);
+$service4 = $di->get(Persons::class);
+
+var_dump($service1 != $service2); // false
+var_dump($service3 != $service4); // false
 ```
+> Une nouvelle instance de la classe est retournée à chaque appel.
+
+## Plus de documentation
+
+[constucteur injection]()
+
+[méthodes injection]()
+
+[interface injection]()
+
+[Singleton injection]()
+
+[Factory injection]()
+
+[Lazy injection]()
+
+[Autowiring]()
+
+[Utiliser la classe Facade DI]()

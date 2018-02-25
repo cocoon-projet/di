@@ -50,7 +50,7 @@ trait ProxyManagerContainerTrait
      * @param $alias un classe php
      * @return bool
      */
-    protected function isLazy($alias)
+    protected function isLazy($alias) :bool
     {
         return isset($this->services[$alias]['@lazy']);
     }
