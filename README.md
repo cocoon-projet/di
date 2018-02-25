@@ -72,8 +72,8 @@ $service2 = $di->get('ma_class');
 $service3 = $di->get(Persons::class);
 $service4 = $di->get(Persons::class);
 
-var_dump($service1 != $service2); // false
-var_dump($service3 != $service4); // false
+var_dump($service1 === $service2); // false
+var_dump($service3 === $service4); // false
 ```
 > Une nouvelle instance de la classe est retournée à chaque appel.
 
