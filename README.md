@@ -79,11 +79,11 @@ var_dump($service3 != $service4); // false
 
 ## Plus de documentation
 
-[constucteur injection](https://github.com/cocoon-projet/di/blob/master/docs/constructor_injection.md)
+[Constructeur injection](https://github.com/cocoon-projet/di/blob/master/docs/constructor_injection.md)
 
-[méthodes injection](https://github.com/cocoon-projet/di/blob/master/docs/methodes_injection.md)
+[Méthodes injection](https://github.com/cocoon-projet/di/blob/master/docs/methodes_injection.md)
 
-[interface injection](https://github.com/cocoon-projet/di/blob/master/docs/interface.md)
+[Interface injection](https://github.com/cocoon-projet/di/blob/master/docs/interface.md)
 
 [Singleton injection](https://github.com/cocoon-projet/di/blob/master/docs/singleton.md)
 
