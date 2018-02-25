@@ -79,18 +79,18 @@ var_dump($service3 != $service4); // false
 
 ## Plus de documentation
 
-[constucteur injection]()
+[constucteur injection](https://github.com/cocoon-projet/di/blob/master/docs/constructor_injection.md)
 
-[méthodes injection]()
+[méthodes injection](https://github.com/cocoon-projet/di/blob/master/docs/methodes_injection.md)
 
-[interface injection]()
+[interface injection](https://github.com/cocoon-projet/di/blob/master/docs/interface.md)
 
-[Singleton injection]()
+[Singleton injection](https://github.com/cocoon-projet/di/blob/master/docs/singleton.md)
 
-[Factory injection]()
+[Factory injection](https://github.com/cocoon-projet/di/blob/master/docs/factory.md)
 
-[Lazy injection]()
+[Lazy injection](https://github.com/cocoon-projet/di/blob/master/docs/lazy.md)
 
-[Autowiring]()
+[Autowiring](https://github.com/cocoon-projet/di/blob/master/docs/autowiring.md)
 
-[Utiliser la classe Facade DI]()
+[Utiliser la classe Facade DI](https://github.com/cocoon-projet/di/blob/master/docs/DI.md)
