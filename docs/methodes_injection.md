@@ -1,6 +1,6 @@
 ## Méthodes injection
 
-Vous pouvez aussi injecter des paramètres vie les méthodes.
+Vous pouvez aussi injecter des paramètres via les méthodes.
 ```php
 <?php
 namespace App\Services;
