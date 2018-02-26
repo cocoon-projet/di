@@ -45,7 +45,7 @@ trait ProxyManagerContainerTrait
     }
 
     /**
-     * Verifie si la classe (object service) doit êlre lazy loader
+     * Verifie si la classe (object service) doit être lazy loader
      *
      * @param $alias un classe php
      * @return bool
