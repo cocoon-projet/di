@@ -49,6 +49,6 @@ $di->bind(Base::class, [
 // Retourner le service
 $service = $di->get(Base::class);
 
-var_dump($service instanceof App\Services\Base);
-var_dump($service->logger instanceof App\Services\Logger);
+var_dump($service instanceof App\Services\Base); // true
+var_dump($service->logger instanceof App\Services\Logger); // true
 ```
