@@ -1,7 +1,7 @@
 ## A Propos
 
 * cocoon-projet/di est un conteneur d'injection de dépendance très léger et très simple à utiliser.
-* cocoon-di est conforme au **standard psr-11**
+* cocoon-projet/di est conforme au **standard psr-11**
 
 ## Pré-requis
 
