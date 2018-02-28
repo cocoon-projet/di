@@ -26,7 +26,7 @@ class SvgDatabase
     
     public function svgToXml()
     {
-            $this->svg_to_xml->save('...');
+        $this->svg_to_xml->save('...');
     }
 }
 ```
