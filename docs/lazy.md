@@ -16,7 +16,7 @@ class SvgDatabase
     public function __construct(SvgToHtml $html, SvgToXml $xml)
     {
         $this->svg_to_html = $html;
-        $this->svg_to_xml = $html;
+        $this->svg_to_xml = $xml;
     }
     
     public function svgToHtml()
