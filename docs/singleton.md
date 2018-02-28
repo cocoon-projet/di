@@ -24,7 +24,7 @@ $di = Container::getInstance();
 $di->bind('mon_singleton', ['@class' => Persons::class, '@singleton' => true]);
 // ou class alias
 $di->bind(Persons::class, ['@singleton' => true]);
-// ou
+// ou utiliser la méthode singleton du container
 $di->singleton('mon_singleton', Persons::class);
 // ou 
 $di->singleton(Persons::class);
