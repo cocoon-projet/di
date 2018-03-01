@@ -9,6 +9,7 @@ bind($alias, $service = null);
 |string 'mon.alias'  |null| 
 |résolution de nom de classe User::class|int| 
 |Chemin complet d'une classe 'App\Controllers\User'|string| 
+| |array   | 
 | |callable   | 
 | |résolution de nom de classe User::class|
 | |Chemin complet d'une classe 'App\Controllers\User'|
