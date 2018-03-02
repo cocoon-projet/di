@@ -103,7 +103,7 @@ factory($alias, $callable = [], $vars = []);
 |$alias|$callable|$vars|
 |-------|-------------|------------|
 |string 'mon.factory'  |Array [MaclasseFactory::class, 'getMaClasse']| Array Arguments ['arg1', 'arg2'] |
-|résolution de nom de classe MaClasse::class|| 
+|résolution de nom de classe MaClasse::class||
 |Chemin complet d'une classe 'App\Controller\Maclasse| 
 
 Exemple:
@@ -126,7 +126,54 @@ $di->factory(MaClasse::class, [MaClasseFactory::class, 'getMaclasse'], ['arg1', 
 
 lazy($class, $params = []);
 
+|$class|$params|
+|-------|-------------|
+|résolution de nom de classe MaClasse::class|Array tableau d'arguments pour le constructeur ['arg1, 'arg2'] |
+|Chemin complet d'une classe 'App\Controller\Maclasse| 
+
+Exemple:
+
+```php
+<?php
+use Cocoon\Dependency\Container;
+
+$di = Container::getInstance();
+
+$di->lazy(MaClasse::class);
+// ou
+$di->lazy('App\Services\MaClasse');
+// si le constructeur a des arguments
+$di->lazy(MaClasse::class, ['arg1', 'arg2']);
+```
+
 addServices($services = null);
+
+$services|
+|-------|
+|Array (un tableau de services ou un fichier qui retourne une tableau de services)|
+
+Exemple:
+
+```php
+<?php
+use Cocoon\Dependency\Container;
+
+$di = Container::getInstance();
+
+// Tablea de services  [ alias => services ]
+$di->addServices([
+    'database' => 'mysql',
+    'config' => ['mode' => 'dev', 'debug' => true],
+    'app.user' => User::class,
+    'request' => [
+        '@class' => Request::class,
+        '@singleton' => true
+    ]
+]);
+
+// ou
+$di->addServices(require 'config.php');
+```
 
 > Méthode qui vérifie si un service est enregistré:
 
