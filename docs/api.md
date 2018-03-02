@@ -1,6 +1,6 @@
 ## API
 
-> Fonctions pour enregistrer les services:
+> Méthodes pour enregistrer les services:
 
 bind($alias, $service = null);
 
@@ -75,21 +75,68 @@ $di->bind(User::class, [
 ```
 singleton($alias, $service = null);
 
+|$alias|$services|
+|-------|-------------|
+|string 'mon.singleton'  |null| 
+|résolution de nom de classe MaClasse::class|résolution de nom de classe MaClasse::class| 
+|Chemin complet d'une classe 'App\Controllers\Maclass'|Chemin complet d'une classe 'App\Controllers\Maclass'| 
+
+Exemple:
+
+```php
+<?php
+use Cocoon\Dependency\Container;
+
+$di = Container::getInstance();
+
+$di->singleton('mon.singleton', 'App\Controllers\Maclass');
+// ou
+$di->singleton('mon.singleton', Maclass::class);
+//ou
+$di->singleton('App\Controllers\Maclass');
+// ou
+$di->singleton(Maclass::class);
+```
+
 factory($alias, $callable = [], $vars = []);
+
+|$alias|$callable|$vars|
+|-------|-------------|------------|
+|string 'mon.factory'  |Array [MaclasseFactory::class, 'getMaClasse']| Array Arguments ['arg1', 'arg2'] |
+|résolution de nom de classe MaClasse::class|| 
+|Chemin complet d'une classe 'App\Controller\Maclasse| 
+
+Exemple:
+
+```php
+<?php
+use Cocoon\Dependency\Container;
+
+$di = Container::getInstance();
+
+$di->factory('mon.factory', [MaClasseFactory::class, 'getMaclasse']);
+// ou
+$di->factory('mon.factory', ['App\Factory\MaClasseFactory', 'getMaclasse']);
+// ou 
+$di->factory(MaClasse::class, [MaClasseFactory::class, 'getMaclasse']);
+// Si la méthode de la classe factory a des arguments
+$di->factory(MaClasse::class, [MaClasseFactory::class, 'getMaclasse'], ['arg1', 'arg2']);
+
+```
 
 lazy($class, $params = []);
 
 addServices($services = null);
 
-> Fonction qui vérifie si un service est enregistré:
+> Méthode qui vérifie si un service est enregistré:
 
 has($alias);
 
-> Fonction qui retourne l'ensemble des services enregistrés
+> Méthode qui retourne l'ensemble des services enregistrés
 
 getServices();
 
-> Fonctions pour retourner les services:
+> Méthodes pour retourner les services:
 
 get($alias);
 
