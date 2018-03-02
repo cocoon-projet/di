@@ -73,7 +73,7 @@ $di->bind(User::class, [
     '@constructor' => ['arg1', 'arg2']
     ]);
 ```
-* La méthode **singleton($alias, $service = null)** du conteneur permet d'initialiser un service (object) qui retournera toujours la même instance de classe.
+* La méthode **singleton($alias, $service = null)** du conteneur permet d'initialiser un service (object) qui retournera toujours la même instance de classe. [En savoir plus](https://github.com/cocoon-projet/di/blob/master/docs/singleton.md)
 
 |$alias|$services|
 |-------|-------------|
@@ -98,7 +98,7 @@ $di->singleton('App\Controllers\Maclass');
 $di->singleton(Maclass::class);
 ```
 
-* La méthode **factory($alias, $callable = [], $vars = [])** du conteneur permet d'inialiser un service (object) a partir d'une autre classe via une méthode
+* La méthode **factory($alias, $callable = [], $vars = [])** du conteneur permet d'inialiser un service (object) a partir d'une autre classe via une méthode. [En savoir plus](https://github.com/cocoon-projet/di/blob/master/docs/factory.md)
 
 |$alias|$callable|$vars|
 |-------|-------------|------------|
@@ -124,7 +124,7 @@ $di->factory(MaClasse::class, [MaClasseFactory::class, 'getMaclasse'], ['arg1', 
 
 ```
 
-* La méthode **lazy($class, $params = [])** du conteneur permet le lazy loading d'une classe.
+* La méthode **lazy($class, $params = [])** du conteneur permet le lazy loading d'une classe. [En savoir plus](https://github.com/cocoon-projet/di/blob/master/docs/lazy.md)
 
 |$class|$params|
 |-------|-------------|
@@ -234,7 +234,7 @@ $di = Container::getInstance();
 $di->bind(Maclasse::class);
 
 // on retourne le service
-$servive = $di->get(Maclasse::class);
+$service = $di->get(Maclasse::class);    
 
 ```
 
