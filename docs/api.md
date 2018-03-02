@@ -146,7 +146,7 @@ $di->lazy('App\Services\MaClasse');
 $di->lazy(MaClasse::class, ['arg1', 'arg2']);
 ```
 
-* La méthode **addServices($services = null)** permet d'enregistrer les services à partir tableau ou un fichier de configuration retournant un tableau de services
+* La méthode **addServices($services = null)** permet d'enregistrer les services à partir tableau ou un fichier de configuration retournant un tableau de services. [En savoir plus](https://github.com/cocoon-projet/di/blob/master/docs/array_ou_fichier_de_configuration.md)
 
 $services|
 |-------|
