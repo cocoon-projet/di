@@ -2,7 +2,7 @@
 
 > Méthodes pour enregistrer les services:
 
-bind($alias, $service = null);
+La méthode **bind($alias, $service = null)** du conteneur permet d'initiliser tous types de services
 
 |$alias|$services|
 |--------|---------|
@@ -73,7 +73,7 @@ $di->bind(User::class, [
     '@constructor' => ['arg1', 'arg2']
     ]);
 ```
-singleton($alias, $service = null);
+La méthode **singleton($alias, $service = null)** du conteneur permet d'initialiser un service (object) qui retournera toujours la même instance de classe.
 
 |$alias|$services|
 |-------|-------------|
@@ -98,7 +98,7 @@ $di->singleton('App\Controllers\Maclass');
 $di->singleton(Maclass::class);
 ```
 
-factory($alias, $callable = [], $vars = []);
+La méthode **factory($alias, $callable = [], $vars = [])** du conteneur permet d'inialiser un service (object) a partir d'une autre classe via une méthode
 
 |$alias|$callable|$vars|
 |-------|-------------|------------|
@@ -124,7 +124,7 @@ $di->factory(MaClasse::class, [MaClasseFactory::class, 'getMaclasse'], ['arg1', 
 
 ```
 
-lazy($class, $params = []);
+La méthode **lazy($class, $params = [])** du conteneur permet le lazy loading d'une classe.
 
 |$class|$params|
 |-------|-------------|
@@ -146,7 +146,7 @@ $di->lazy('App\Services\MaClasse');
 $di->lazy(MaClasse::class, ['arg1', 'arg2']);
 ```
 
-addServices($services = null);
+La méthode **addServices($services = null)** permet d'enregistrer les services à partir tableau ou un fichier de configuration retournant un tableau de services
 
 $services|
 |-------|
@@ -177,7 +177,7 @@ $di->addServices(require 'config.php');
 
 > Méthode qui vérifie si un service est enregistré:
 
-has($alias);
+La méthode **has($alias)** du conteneur permet de vérifier si un service éxiste
 
 Utilisation:
 
@@ -197,7 +197,7 @@ if ($di->has('service')) {
 
 > Méthode qui retourne l'ensemble des services enregistrés
 
-getServices();
+La méthode **getServices()** du conteneur permet de contrôler l'ensemble des services enregistrés.
 
 Utilisation:
 
@@ -223,6 +223,6 @@ var_dump($di->getServices());
 
 > Méthodes pour retourner les services:
 
-get($alias);
+La méthode **get($alias)** du conteneur permet de retourner un service enregistré;
 
-make($class, $mixed = null, $vars = []);
+La méthode **make($class, $mixed = null, $vars = [])** du conteneur permet de gérer L'autowiring.
