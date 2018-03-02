@@ -160,7 +160,7 @@ use Cocoon\Dependency\Container;
 
 $di = Container::getInstance();
 
-// Tablea de services  [ alias => services ]
+// Tableau de services  [ alias => services ]
 $di->addServices([
     'database' => 'mysql',
     'config' => ['mode' => 'dev', 'debug' => true],
@@ -171,7 +171,7 @@ $di->addServices([
     ]
 ]);
 
-// ou
+// ou un fichier qui retourne un tableau de sarvice
 $di->addServices(require 'config.php');
 ```
 
@@ -179,9 +179,47 @@ $di->addServices(require 'config.php');
 
 has($alias);
 
+Utilisation:
+
+```php
+<?php
+use Cocoon\Dependency\Container;
+
+$di = Container::getInstance();
+
+$di->bind('service', 'mon service');
+// on vérifie si le service éxiste
+if ($di->has('service')) {
+    return $di->get('service');
+}
+
+```
+
 > Méthode qui retourne l'ensemble des services enregistrés
 
 getServices();
+
+Utilisation:
+
+```php
+<?php
+use Cocoon\Dependency\Container;
+
+$di = Container::getInstance();
+
+// Tableau de services  [ alias => services ]
+$di->addServices([
+    'database' => 'mysql',
+    'config' => ['mode' => 'dev', 'debug' => true],
+    'app.user' => User::class,
+    'request' => [
+        '@class' => Request::class,
+        '@singleton' => true
+    ]
+]);
+// Retourne les services enragistrés
+var_dump($di->getServices());
+```
 
 > Méthodes pour retourner les services:
 
