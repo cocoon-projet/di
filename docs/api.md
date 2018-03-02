@@ -13,7 +13,7 @@ bind($alias, $service = null);
 | |callable   | 
 | |résolution de nom de classe User::class|
 | |Chemin complet d'une classe 'App\Controllers\User'|
-| |Tableau associatif avec les clefs réservées @class, @constructor, @singleton, @factory, @arguments; @lazy|
+| |Tableau associatif avec les clefs réservées @class, @constructor, @methods, @singleton, @factory, @arguments; @lazy|
 
 Exemple:
 
