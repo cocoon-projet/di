@@ -171,7 +171,7 @@ $di->addServices([
     ]
 ]);
 
-// ou un fichier qui retourne un tableau de sarvice
+// ou un fichier qui retourne un tableau de services
 $di->addServices(require 'config.php');
 ```
 
@@ -217,7 +217,7 @@ $di->addServices([
         '@singleton' => true
     ]
 ]);
-// Retourne les services enragistrés
+// Retourne les services enregistrés
 var_dump($di->getServices());
 ```
 
