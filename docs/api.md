@@ -225,4 +225,17 @@ var_dump($di->getServices());
 
 * La méthode **get($alias)** du conteneur permet de retourner un service enregistré;
 
-* La méthode **make($class, $mixed = null, $vars = [])** du conteneur permet de gérer L'autowiring.
+```php
+<?php
+use Cocoon\Dependency\Container;
+
+$di = Container::getInstance();
+
+$di->bind(Maclasse::class);
+
+// on retourne le service
+$servive = $di->get(Maclasse::class);
+
+```
+
+* La méthode **make($class, $mixed = null, $vars = [])** du conteneur permet de gérer L'autowiring. [En savoir plus](https://github.com/cocoon-projet/di/blob/master/docs/autowiring.md)
