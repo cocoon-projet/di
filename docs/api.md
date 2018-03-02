@@ -58,7 +58,18 @@ $di->bind(User::class, ['@singleton' => true]);
 $di->bind(User::class, [
     '@factory' => [UserFactory::class, 'getUser']
     ]);
-  
+// factory injection avec arguments dans la méthode
+$di->bind(User::class, [
+      '@factory' => [UserFactory::class, 'getUser'],
+      '@arguments' => ['arg1', 'arg2']
+      ]); 
+// lazy injection
+$di->bind(User::class, ['@lazy' => true]);
+// lazy injection avec paramètres dans le constructeur de la classe
+$di->bind(User::class, [
+    '@lazy' => true,
+    '@constructor' => ['arg1', 'arg2']
+    ]);
 ```
 singleton($alias, $service = null);
 
