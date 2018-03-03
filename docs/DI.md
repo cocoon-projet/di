@@ -36,7 +36,7 @@ DI::addServices([
     ArticlesController::class => ['@constructor' => [ArticleRepository::class, 'ok']]
 ]);
 
+var_dump(DI::get('db.dsn')); // mysql:host=localhost;dbname=testdb
 var_dump(DI::get('person')); // object(App\Services\Persons)
-
 var_dump(DI::get(ArticlesController::class)); //object(App\Controllers\ArticlesController)
 ```
