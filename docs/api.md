@@ -242,6 +242,6 @@ $service = $di->get(Maclasse::class);
 
 |$class|$mixed|$vars|
 |-----|-----|-----|
-|résolution de nom de classe MaClasse::class|null|array (arguments de la méthode de la classe indiqué dans $mixed)|
+|résolution de nom de classe MaClasse::class|null|array (arguments de la méthode de la classe indiquée dans $mixed)|
 |Chemin complet d'une classe 'App\Controller\Maclasse'|array (arguments du constructeur de la classe)| |
 | |string (nom d'une méthode de la classe)| |
