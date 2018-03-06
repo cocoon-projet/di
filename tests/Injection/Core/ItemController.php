@@ -1,7 +1,7 @@
 <?php
 namespace Injection\Core;
 
-class itemController implements ControllerInterface
+class ItemController implements ControllerInterface
 {
     protected $name;
     protected $surname;
