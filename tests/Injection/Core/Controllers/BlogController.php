@@ -2,7 +2,7 @@
 
 namespace Injection\Core\Controllers;
 
-use Injection\Core\itemController;
+use Injection\Core\ItemController;
 
 class BlogController
 {
