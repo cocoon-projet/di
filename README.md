@@ -1,3 +1,7 @@
+# Cocoon-projet/di
+
+[![Build Status](https://travis-ci.org/cocoon-projet/di.svg?branch=master)](https://travis-ci.org/cocoon-projet/di)
+
 ## A Propos
 
 * cocoon-projet/di est un conteneur d'injection de dépendance très léger et très simple à utiliser.
