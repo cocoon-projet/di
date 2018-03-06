@@ -55,7 +55,7 @@ $service = $di->get(Base::class);
 var_dump($service instanceof App\Services\Base); // true
 var_dump($service->logger instanceof App\Services\Logger); // true
 ```
-> Note: Si vous procédez de la manière suivante. Vous aurez le même résultat.
+> Note: Si vous procédez de la manière suivante. Vous obtenez le même résultat.
 
 ```php
 <?php
