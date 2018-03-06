@@ -47,7 +47,7 @@ $di->bind(SvgDatabase::class, ['@constructor' => [SvgToHtml::class, SvgToXml::cl
 $proxy = $di->get(SvgDatabase::class);
 $proxy->svgToHtml();
 ```
-> Dans cette exemple la fonction svgToXml() n'est pas appelèe et la classe SvgToXml est initialé et injecté dans la classe mais n'est jamais utilisée.
+> Dans cette exemple la fonction svgToXml() n'est pas appelèe et la classe SvgToXml est initialisé et injecté dans la classe mais n'est jamais utilisée.
 
 Vous pouvez aussi utiliser la fonction lazy() du conteneur. Vous obtenez le même résultat.
 
@@ -67,5 +67,5 @@ $proxy = $di->get(SvgDatabase::class);
 $proxy->svgToHtml();
 ```
 
-Cette fonctionnalité utilise la bibliothèque php [Ocramius/ProxyManager](https://github.com/Ocramius/ProxyManager). Pour plus de renseignement vous pouvez consulter la documentation suivante [Lazy Loading Value Holder Proxy](https://ocramius.github.io/ProxyManager/docs/lazy-loading-value-holder.html)
+Cette fonctionnalité utilise la bibliothèque php [Ocramius/ProxyManager](https://github.com/Ocramius/ProxyManager). Pour plus d'information vous pouvez consulter la documentation suivante [Lazy Loading Value Holder Proxy](https://ocramius.github.io/ProxyManager/docs/lazy-loading-value-holder.html)
 
