@@ -16,7 +16,7 @@ trait AutowireContainerTrait
      *
      * @param string $class
      * @param null|array|string $mixed   string = methode de classe : array = arguments du constructeur
-     * @param array $vars arguments de la méthode
+     * @param array $vars arguments de la méthode indiquée dans $mixed
      * @return object
      * @throws \ReflectionException
      */

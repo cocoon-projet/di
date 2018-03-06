@@ -104,7 +104,7 @@ $di->singleton(Maclass::class);
 |-------|-------------|------------|
 |string 'mon.factory'  |Array [MaclasseFactory::class, 'getMaClasse']| Array Arguments ['arg1', 'arg2'] |
 |résolution de nom de classe MaClasse::class||
-|Chemin complet d'une classe 'App\Controller\Maclasse| 
+|Chemin complet d'une classe 'App\Controller\Maclasse'| 
 
 Exemple:
 
@@ -129,7 +129,7 @@ $di->factory(MaClasse::class, [MaClasseFactory::class, 'getMaclasse'], ['arg1', 
 |$class|$params|
 |-------|-------------|
 |résolution de nom de classe MaClasse::class|Array tableau d'arguments pour le constructeur ['arg1, 'arg2'] |
-|Chemin complet d'une classe 'App\Controller\Maclasse| 
+|Chemin complet d'une classe 'App\Controller\Maclasse'| 
 
 Exemple:
 
@@ -239,3 +239,9 @@ $service = $di->get(Maclasse::class);
 ```
 
 * La méthode **make($class, $mixed = null, $vars = [])** du conteneur permet de gérer L'autowiring. [En savoir plus](https://github.com/cocoon-projet/di/blob/master/docs/autowiring.md)
+
+|$class|$mixed|$vars|
+|-----|-----|-----|
+|résolution de nom de classe MaClasse::class|null|array (arguments de la méthode de la classe indiqué dans $mixed)|
+|Chemin complet d'une classe 'App\Controller\Maclasse'|array (arguments du constructeur de la classe)| |
+| |string (nom d'une méthode de la classe)| |
