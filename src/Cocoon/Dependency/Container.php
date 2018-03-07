@@ -63,11 +63,15 @@ class Container implements ContainerInterface
     /**
      * Ajoute les services à partir d'un tableau php ou un fichier
      *
-     * @param array $services
+     * @param array $services ou nom d'un fichier
      * @return self
      */
     public function addServices($services = null) :self
     {
+
+        if (is_string($services) && is_file($services)) {
+            $services = require $services;
+        }
         if (!is_array($services)) {
             throw new ContainerException('le paramètre services doivent être de type array');
         }
