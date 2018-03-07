@@ -51,7 +51,7 @@ use Cocoon\Dependency\Container;
 $di = Container::getInstance();
 
 // array [ $alias => $services ]
-$di->addServices(require 'config.php');
+$di->addServices('config.php');
 
 // Vous pouvez maintenant retourner les services avec la méthode get() du conteneur
 ```
