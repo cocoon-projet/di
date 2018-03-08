@@ -30,4 +30,10 @@ class ContainerExceptionTest extends TestCase
         $this->expectException(Cocoon\Dependency\ContainerException::class);
         $this->service->addServices('kkkkk.php');
     }
+
+    public function testAddserviceContainerNotArrayMethodException()
+    {
+        $this->expectException(Cocoon\Dependency\ContainerException::class);
+        $this->service->addServices(123);
+    }
 }
