@@ -37,7 +37,7 @@ trait ResolverContainerTrait
 
             if (class_exists($alias) && !isset($this->services[$alias]['@class'])) {
                 $this->services[$alias]['@class'] = $alias;
-            } elseif (!class_exists($alias) && !isset($this->services[$alias]['@class'])) {
+            } elseif (!class_exists($alias) && !isset($this->services[$alias]['@class']) && !$this->isLazy($alias)) {
                 return $this->services[$alias];
             }
 

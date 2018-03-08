@@ -2,6 +2,7 @@
 
 
 use Cocoon\Dependency\Container;
+use Injection\Proxy\MyProxyClass;
 use PHPUnit\Framework\TestCase;
 
 class ContainerExceptionTest extends TestCase
@@ -11,6 +12,7 @@ class ContainerExceptionTest extends TestCase
     public function setUp()
     {
         $this->service = Container::getInstance();
+        $this->service->bind('notClass', ['@lazy' => true]);
     }
 
     public function testBindContainerMethodException()
@@ -35,5 +37,11 @@ class ContainerExceptionTest extends TestCase
     {
         $this->expectException(Cocoon\Dependency\ContainerException::class);
         $this->service->addServices(123);
+    }
+
+    public function testProxyContainerException()
+    {
+        $this->expectException(Cocoon\Dependency\ContainerException::class);
+        $this->service->get('notClass');
     }
 }
