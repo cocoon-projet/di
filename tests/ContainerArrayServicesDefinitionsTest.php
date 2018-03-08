@@ -8,7 +8,7 @@ use Injection\Autowire\D;
 use Injection\Core\ItemController;
 use PHPUnit\Framework\TestCase;
 
-class ContainerArrayServicesDefinitions extends TestCase
+class ContainerArrayServicesDefinitionsTest extends TestCase
 {
     private $service;
 
