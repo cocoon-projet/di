@@ -1,5 +1,4 @@
 <?php
-namespace Injection;
 
 use Cocoon\Dependency\Container;
 use Injection\Core\ItemStaticFactory;

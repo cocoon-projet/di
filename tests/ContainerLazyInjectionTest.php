@@ -1,7 +1,5 @@
 <?php
 
-namespace Injection;
-
 use Cocoon\Dependency\Container;
 use Injection\Proxy\MyProxyClass;
 use Injection\Proxy\TestProxy;

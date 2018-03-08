@@ -69,8 +69,12 @@ class Container implements ContainerInterface
     public function addServices($services = null) :self
     {
 
-        if (is_string($services) && is_file($services)) {
-            $services = require $services;
+        if (is_string($services)) {
+            if (file_exists($services)) {
+                $services = require $services;
+            } else {
+                throw new ContainerException('le fichier ' . $services . ' n\'existe pas');
+            }
         }
         if (!is_array($services)) {
             throw new ContainerException('le paramètre services doivent être de type array');
@@ -92,13 +96,13 @@ class Container implements ContainerInterface
      */
     public function bind($alias, $service = null) :self
     {
-        if (!is_string(trim($alias))) {
+        if (is_numeric($alias) or !is_string($alias)) {
             throw new ContainerException('l\'alias ou le service doivent être de type string');
         }
         if ($service === null) {
-            $this->services[$alias] = $alias;
+            $this->services[trim($alias)] = trim($alias);
         } else {
-            $this->services[$alias] = $service;
+            $this->services[trim($alias)] = $service;
         }
         return self::$instance;
     }
