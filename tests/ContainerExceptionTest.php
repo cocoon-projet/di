@@ -2,7 +2,6 @@
 
 
 use Cocoon\Dependency\Container;
-use Injection\Proxy\MyProxyClass;
 use PHPUnit\Framework\TestCase;
 
 class ContainerExceptionTest extends TestCase
