@@ -245,7 +245,7 @@ class Container implements ContainerInterface
         $this->singleton[$alias] = $services;
     }
     /**
-     * Retourne un service si il est en cahe (type singleton)
+     * Retourne un service si il est en cache (type singleton)
      *
      * @param  string $alias alias du service
      * @return object

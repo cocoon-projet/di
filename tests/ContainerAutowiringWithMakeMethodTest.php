@@ -65,4 +65,16 @@ class ContainerAutowiringWithMakeMethodTest extends TestCase
         $test = $this->service->make(BlogController::class, ['param' => 'je suis un paramètre']);
         $this->assertEquals('je suis un paramètre', $test->param);
     }
+
+    public function testAutowireSimpleClass()
+    {
+        $test = $this->service->make(D::class);
+        $this->assertInstanceOf(D::class, $test);
+    }
+
+    public function testAutowireSimpleClassWithNoragumentConstructor()
+    {
+        $test = $this->service->make(C::class);
+        $this->assertInstanceOf(C::class, $test);
+    }
 }
