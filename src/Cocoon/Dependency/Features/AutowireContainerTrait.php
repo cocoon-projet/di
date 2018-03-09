@@ -39,15 +39,16 @@ trait AutowireContainerTrait
             $constructor_params = $constructor->getParameters();
             if (count($constructor_params) == 0 && $method == null) {
                 return new $class();
+            } else {
+                // initialisation des paramètres du constructeur
+                $args = $this->resolveInjection($constructor_params, $constructorArguments);
             }
-            // initialisation des paramètres du constructeur
-            $args = $this->resolveInjection($constructor_params, $constructorArguments);
         }
 
         if ($method == null) {
             return new $class(...$args);
         }
-        if (is_null($constructor)) {
+        if (is_null($constructor) or count($constructor_params) == 0) {
             $instance = new $class();
         } else {
             $instance = new $class(...$args);
