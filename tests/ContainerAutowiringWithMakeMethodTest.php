@@ -68,8 +68,8 @@ class ContainerAutowiringWithMakeMethodTest extends TestCase
 
     public function testAutowireSimpleClass()
     {
-        $test = $this->service->make(D::class);
-        $this->assertInstanceOf(D::class, $test);
+        $test = $this->service->make(D::class, 'test', ['param' => 'ok']);
+        $this->assertEquals('ok', $test);
     }
 
     public function testAutowireSimpleClassWithNoragumentConstructor()
