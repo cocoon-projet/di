@@ -3,7 +3,7 @@ namespace Cocoon\Dependency;
 
 use Cocoon\Dependency\Features\ProxyManagerContainerTrait;
 use Cocoon\Dependency\Features\ResolverContainerTrait;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Cocoon\Dependency\Features\AutowireContainerTrait;
 use ReflectionClass;
 
