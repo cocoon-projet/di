@@ -1,9 +1,10 @@
 <?php
 return [
-    'db.dsn' => 'mysql:dbname=blog;host=localhost;charset=utf8',
-    'db.user' => 'root',
-    'db.password' => '',
-    \PDO::class => [
-        'constructor' => ['db.dsn', 'db.user', 'db.password']
-    ]
+    'db.dsn' => 'mysql:host=localhost;dbname=testdb',
+    'db.port' => 3306,
+    'app.config' => ['mode' => 'production', 'debug' => false],
+    'item' => 'Injection\Core\ItemController',
+    // alias => null   (l'alias  est le service)
+    D::class => null,
+    B::class => ['@constructor' => [D::class]]
 ];
