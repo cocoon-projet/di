@@ -17,7 +17,6 @@ class ContainerFileServicesDefinitionsTest extends TestCase
     public function testFileServicesDefinitions()
     {
         $this->service->addServices(__DIR__ . '/Injection/Core/config.php');
-        $this->assertTrue(is_array($this->service->getServices()));
         $this->assertEquals('mysql:host=localhost;dbname=testdb', $this->service->get('db.dsn'));
         $this->assertInstanceOf(ItemController::class, $this->service->get('item'));
     }
