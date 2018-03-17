@@ -172,7 +172,7 @@ $di->addServices([
 ]);
 
 // ou un fichier qui retourne un tableau de services
-$di->addServices(require 'config.php');
+$di->addServices('config.php');
 ```
 
 > Méthode qui vérifie si un service est enregistré:
