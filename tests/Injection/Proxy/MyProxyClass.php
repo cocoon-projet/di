@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Fpilucius
- * Date: 18/02/2018
- * Time: 11:01
- */
 
 namespace Injection\Proxy;
 

@@ -11,10 +11,15 @@ class TestProxy
     public $proxy;
 
     public $render;
+    /**
+     * @var AnotherProxyClass
+     */
+    public $anotherProxy;
 
-    public function __construct(MyProxyClass $proxy)
+    public function __construct(MyProxyClass $proxy, AnotherProxyClass $anotherProxy)
     {
         $this->proxy = $proxy;
+        $this->anotherProxy = $anotherProxy;
     }
 
     public function getProxyRender()
@@ -26,5 +31,10 @@ class TestProxy
     {
        $this->render = 'not need proxy';
        return $this;
+    }
+
+    public function getAnotherProxyArg()
+    {
+        return $this->anotherProxy->arg1;
     }
 }
