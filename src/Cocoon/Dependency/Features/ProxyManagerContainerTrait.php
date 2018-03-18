@@ -36,8 +36,7 @@ trait ProxyManagerContainerTrait
             & $initializer
         ) use ($alias) {
             $initializer   = null; // disable initialization
-            $wrappedObject = $this->makeInstance($alias);
-            ; // fill your object with values here
+            $wrappedObject = $this->makeInstance($alias); // fill your object with values here
 
             return true; // confirm that initialization occurred correctly
         };
