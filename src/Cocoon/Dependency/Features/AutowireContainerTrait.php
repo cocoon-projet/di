@@ -26,7 +26,7 @@ trait AutowireContainerTrait
         $constructorArguments = [];
         if (is_string($mixed)) {
             $method = $mixed;
-        } else {
+        } elseif (is_array($mixed)) {
             $constructorArguments = $mixed;
         }
         $reflexion = new ReflectionClass($class);
