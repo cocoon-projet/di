@@ -66,6 +66,26 @@ $di->bind(SvgDatabase::class, ['@constructor' => [SvgToHtml::class, SvgToXml::cl
 $proxy = $di->get(SvgDatabase::class);
 $proxy->svgToHtml();
 ```
+> Note: Il est possible d'ajouter des arguments au constructeur de la classe lazy loadée
+
+Vous devez procéder de la manière suivante
+
+```php
+<?php
+use Cocoon\Dependency\Container;
+
+$di = Container::getInstance();
+
+$di->bind(LazyClass::class, [
+    '@lazy' => true,
+    '@constructor' => ['arg1', 'arg2']
+    ]);
+
+// ou
+
+$di->lazy(LazyClass::class, ['arg1', 'arg2']);
+
+```
 
 Cette fonctionnalité utilise la bibliothèque php [Ocramius/ProxyManager](https://github.com/Ocramius/ProxyManager). Pour plus d'information vous pouvez consulter la documentation suivante [Lazy Loading Value Holder Proxy](https://ocramius.github.io/ProxyManager/docs/lazy-loading-value-holder.html)
 
