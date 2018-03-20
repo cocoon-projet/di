@@ -98,3 +98,18 @@ $service = $di->get(Item::class);
 
 var_dump($service instanceof App\Services\Item); // true
 ```
+> Note: Il est possible d'injecter des arguments suplémentaires à la fonction appelée.
+
+Vous pouvez procéder de la manière suivante
+
+```php
+<?php
+
+$di->bind('class.factory', [
+    '@factory' => [MaclassFactory::class, 'create'], 
+    '@arguments' => ['arg1', 'arg2']
+    ]);
+// ou
+
+$di->factory('class.factory', [MaClassFactory::class, 'create'], ['arg1', 'arg2']);
+```
