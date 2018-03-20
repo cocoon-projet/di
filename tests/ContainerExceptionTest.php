@@ -2,6 +2,7 @@
 
 
 use Cocoon\Dependency\Container;
+use Injection\Core\NoService;
 use PHPUnit\Framework\TestCase;
 
 class ContainerExceptionTest extends TestCase
@@ -12,6 +13,7 @@ class ContainerExceptionTest extends TestCase
     {
         $this->service = Container::getInstance();
         $this->service->bind('notClass', ['@lazy' => true]);
+        $this->service->bind(NoService::class);
     }
 
     public function testBindContainerMethodException()
@@ -42,5 +44,11 @@ class ContainerExceptionTest extends TestCase
     {
         $this->expectException(Cocoon\Dependency\ContainerException::class);
         $this->service->get('notClass');
+    }
+
+    public function testNoResolveServiceException()
+    {
+        $this->expectException(Cocoon\Dependency\ContainerException::class);
+        $this->service->get(NoService::class);
     }
 }
