@@ -190,4 +190,4 @@ $di->bind(PDO::class, [
 $service = $di->make(BlogController::class, 'show', ['id' => 15]);
 ```
 
-Cette utilisation est importante quand les objets injectés ont des paramètres (ex: PDO avec son dsn)?
+Cette utilisation est importante quand les objets injectés ont des paramètres (ex: PDO avec son dsn)
