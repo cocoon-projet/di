@@ -245,3 +245,5 @@ $service = $di->get(Maclasse::class);
 |résolution de nom de classe MaClasse::class|null|array (arguments de la méthode de la classe indiquée dans $mixed)|
 |Chemin complet d'une classe 'App\Controller\Maclasse'|array (arguments du constructeur de la classe)| |
 | |string (nom d'une méthode de la classe)| |
+
+> Note: Si la classe appelée par la méthode make du conteneur contient des objets enregistrés dans le conteneur, ils seront injectés automatiquements dans cette classe.

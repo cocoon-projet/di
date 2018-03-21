@@ -151,3 +151,43 @@ $service = $di->make(BlogController::class, 'show', ['id' => 15]);
 ```
 Vous obtenez le même résultat.
 
+> Note: Si la classe appelée par la méthode make du conteneur contient des objets enregistrés dans le conteneur, ils seront injectés automatiquements dans cette classe.
+
+Exemple:
+
+```php
+<?php
+
+class BlogController
+{   
+    private $pdo;
+    
+    public function __construct(PDO $pdo)
+    {
+        $this->pdo = $pdo;
+    }
+    
+    public function show($id)
+    {
+        $result = $this->pdo->query("SELECT * FROM posts WHERE id=" . $id)->fetchAll();
+        return $result[0];
+    }
+}
+```
+
+Fonctionnement:
+
+```php
+<?php
+use Cocoon\Dependency\Container;
+
+$di = Container::getInstance();
+
+$di->bind(PDO::class, [
+    '@constructor' => ['sqlite:database.sqlite']
+    ]);
+
+$service = $di->make(BlogController::class, 'show', ['id' => 15]);
+```
+
+Cette utilisation est importante quand les objets injectés ont des paramètres (ex: PDO avec son dsn)?
