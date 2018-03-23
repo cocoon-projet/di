@@ -2,6 +2,8 @@
 
 [API](https://github.com/cocoon-projet/di/blob/master/docs/api.md)
 
+[Premier pas](https://github.com/cocoon-projet/di/blob/master/docs/premier_pas.md)
+
 [Constructeur injection](https://github.com/cocoon-projet/di/blob/master/docs/constructor_injection.md)
 
 [Méthodes injection](https://github.com/cocoon-projet/di/blob/master/docs/methodes_injection.md)
