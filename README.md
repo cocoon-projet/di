@@ -29,3 +29,7 @@ Php version 7.0.0 ou plus
 
 [Documentation](https://github.com/cocoon-projet/di/blob/master/docs/README.md)
 
+## Roadmap
+
+[Roadmap](https://github.com/cocoon-projet/di/blob/master/roadmap.md)
+
