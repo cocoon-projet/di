@@ -18,6 +18,6 @@
 
 [Autowiring](https://github.com/cocoon-projet/di/blob/master/docs/autowiring.md)
 
-[Array services ou fichier de configuration](https://github.com/cocoon-projet/di/blob/master/docs/array_ou_fichier_de_configuration.md)
+[Enregistrer les services à partir d'un tableau php ou un fichier de configuration](https://github.com/cocoon-projet/di/blob/master/docs/array_ou_fichier_de_configuration.md)
 
 [Utiliser la classe Facade DI](https://github.com/cocoon-projet/di/blob/master/docs/DI.md)
