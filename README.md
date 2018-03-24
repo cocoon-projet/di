@@ -18,7 +18,7 @@ Insertion dans votre composer.json
 
 ```
  "require": {
-        "cocoon-projet/di": "1.0.0",
+        "cocoon-projet/di": "1.0.0"
     }
 ```
 ## Pré-requis
