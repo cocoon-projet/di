@@ -1,7 +1,7 @@
 {
     "name": "cocoon-projet/di",
     "type": "library",
-    "description": "Un simple et léger containeur d'injection de dépendances",
+    "description": "Un simple et léger conteneur d'injection de dépendances",
     "keywords": ["di", "container", "dependency", "injection", "services", "definition", "psr-11"],
     "homepage": "https://github.com/cocoon-projet/di/blob/master/docs/README.md",
     "license": "MIT",
