@@ -18,7 +18,7 @@ Insertion dans votre composer.json
 
 ```
  "require": {
-        "cocoon-projet/di": "1.0.0"
+        "cocoon-projet/di": "^1.0.0"
     }
 ```
 ## Pré-requis
@@ -28,6 +28,8 @@ Php version 7.0.0 ou plus
 ## Documentation
 
 [Documentation](https://github.com/cocoon-projet/di/blob/master/docs/README.md)
+
+[Application de Demonstration](https://github.com/cocoon-projet/di-app-demo)
 
 ## Roadmap
 
