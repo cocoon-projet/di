@@ -29,11 +29,11 @@ trait ProxyManagerContainerTrait
         }
         $factory = new LazyLoadingValueHolderFactory();
         $initializer = function (
-            & $wrappedObject,
+            &$wrappedObject,
             LazyLoadingInterface $proxy,
             $method,
             array $parameters,
-            & $initializer
+            &$initializer
         ) use ($alias) {
             $initializer   = null; // disable initialization
             $wrappedObject = $this->makeInstance($alias); // fill your object with values here
