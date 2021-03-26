@@ -18,12 +18,12 @@ Insertion dans votre composer.json
 
 ```
  "require": {
-        "cocoon-projet/di": "^1.0.0"
+        "cocoon-projet/di": "^1"
     }
 ```
 ## Pré-requis
 
-Php version 7.0.0 ou plus
+Php version 7.0 ou plus
 
 ## Documentation
 
