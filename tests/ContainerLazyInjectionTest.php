@@ -10,7 +10,7 @@ class ContainerLazyInjectionTest extends TestCase
 {
     private $service;
 
-    public function setUp()
+    protected function setUp() :void
     {
         $this->service = Container::getInstance();
         $this->service->lazy(MyProxyClass::class);

@@ -13,7 +13,7 @@ class ContainerInjectionObjectAndInterfaceByClassNameTest extends TestCase
 {
     private $service;
 
-    public function setUp()
+    protected function setUp() :void
     {
         $this->service = Container::getInstance();
         $this->service->bind(ControllerInterface::class, ItemController::class);

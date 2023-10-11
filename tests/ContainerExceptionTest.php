@@ -9,7 +9,7 @@ class ContainerExceptionTest extends TestCase
 {
     private $service;
 
-    public function setUp()
+    protected function setUp() :void
     {
         $this->service = Container::getInstance();
         $this->service->bind('notClass', ['@lazy' => true]);

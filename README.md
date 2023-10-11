@@ -23,7 +23,7 @@ Insertion dans votre composer.json
 ```
 ## Pré-requis
 
-Php version 7.0 ou plus
+Php version 8.0 ou plus
 
 ## Documentation
 

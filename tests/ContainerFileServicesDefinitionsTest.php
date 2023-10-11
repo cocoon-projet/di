@@ -9,7 +9,7 @@ class ContainerFileServicesDefinitionsTest extends TestCase
 {
     private $service;
 
-    public function setUp()
+    protected function setUp() :void
     {
         $this->service = Container::getInstance();
     }

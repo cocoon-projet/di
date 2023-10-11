@@ -77,8 +77,8 @@ trait AutowireContainerTrait
     {
         $params = [];
         foreach ($parameters as $param) {
-            if (!is_null($param->getClass())) {
-                $class_name = $param->getClass()->getName();
+            if ($param->getType() && !$param->getType()->isBuiltin()) {
+                $class_name = $param->getType()->getName();
                 $params[] = ($this->has($class_name)) ? $this->get($class_name) : $this->make($class_name);
             } else {
                 if (isset($vars[$param->getName()])) {

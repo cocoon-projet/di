@@ -11,7 +11,7 @@ class ContainerFactoryInjectionTest extends TestCase
 {
     private $service;
 
-    public function setup()
+    protected function setUp() :void
     {
         $this->service = Container::getInstance();
         $this->service->factory(ItemController::class, [itemFactory::class, 'getItem']);

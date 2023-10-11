@@ -6,8 +6,7 @@ use PHPUnit\Framework\TestCase;
 class ContainerInjectionStringIntegerArrayTest extends TestCase
 {
     protected $service;
-
-    public function setUp ()
+    protected function setUp() :void
     {
         $this->service = Container::getInstance();
         $this->service->bind('string', 'je suis une chaine de carartère');

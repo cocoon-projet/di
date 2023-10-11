@@ -5,6 +5,6 @@ return [
     'app.config' => ['mode' => 'production', 'debug' => false],
     'item' => 'Injection\Core\ItemController',
     // alias => null   (l'alias  est le service)
-    D::class => null,
+    D::class =>'@alias',
     B::class => ['@constructor' => [D::class]]
 ];

@@ -66,7 +66,7 @@ class Container implements ContainerInterface
      * @param array $services ou nom d'un fichier
      * @return self
      */
-    public function addServices($services = null) :self
+    public function addServices($services) :self
     {
 
         if (is_string($services)) {
@@ -82,7 +82,7 @@ class Container implements ContainerInterface
         foreach ($services as $alias => $service) {
             $this->bind($alias, $service);
         }
-        return self::$instance;
+       return self::getInstance();
     }
 
     /**
@@ -94,17 +94,17 @@ class Container implements ContainerInterface
      * définition du service
      * @return self
      */
-    public function bind($alias, $service = null) :self
+    public function bind($alias, $service = '@alias') :self
     {
         if (is_numeric($alias) or !is_string($alias)) {
             throw new ContainerException('l\'alias ou le service doivent être de type string');
         }
-        if ($service === null) {
+        if ($service === '@alias') {
             $this->services[trim($alias)] = trim($alias);
         } else {
             $this->services[trim($alias)] = $service;
         }
-        return self::$instance;
+        return self::getInstance();
     }
 
     /**
@@ -161,7 +161,7 @@ class Container implements ContainerInterface
     {
         $this->bind($alias, ['@factory' => $callable,
                              '@arguments' => $vars]);
-        return self::$instance;
+        return self::getInstance();
     }
 
     /**

@@ -11,7 +11,7 @@ class ContainerArrayServicesDefinitionsTest extends TestCase
 {
     private $service;
 
-    public function setUp()
+    protected function setUp() :void
     {
         $this->service = Container::getInstance();
         $this->service->addservices([
@@ -19,8 +19,8 @@ class ContainerArrayServicesDefinitionsTest extends TestCase
             'db.port' => 3306,
             'app.config' => ['mode' => 'production', 'debug' => false],
             'item' => 'Injection\Core\ItemController',
-            // alias => null   (l'alias  est le service)
-            D::class => null,
+            // alias => @alias(l'alias  est le service)
+            D::class => '@alias',
             B::class => ['@constructor' => [D::class]]
         ]);
     }
