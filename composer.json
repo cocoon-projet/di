@@ -24,5 +24,10 @@
         "psr-4": {
             "Injection\\": "tests/Injection/"
         }
+    },
+    "scripts": {
+        "test": ["vendor/bin/phpcbf",
+                "vendor/bin/phpcs",
+                "vendor/bin/phpunit --colors --coverage-text"]
     }
 }

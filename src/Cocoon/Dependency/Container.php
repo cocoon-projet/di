@@ -82,7 +82,7 @@ class Container implements ContainerInterface
         foreach ($services as $alias => $service) {
             $this->bind($alias, $service);
         }
-       return self::getInstance();
+        return self::getInstance();
     }
 
     /**
