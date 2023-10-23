@@ -1,6 +1,6 @@
 # Cocoon-projet/di
 
-[![PHP Composer](https://github.com/cocoon-projet/di/actions/workflows/ci.yml/badge.svg)](https://github.com/cocoon-projet/di/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/cocoon-projet/di/graph/badge.svg?token=K8ISQKFGA0)](https://codecov.io/gh/cocoon-projet/di) [![PHP Composer](https://github.com/cocoon-projet/di/actions/workflows/ci.yml/badge.svg)](https://github.com/cocoon-projet/di/actions/workflows/ci.yml)
 
 ## A Propos
 
