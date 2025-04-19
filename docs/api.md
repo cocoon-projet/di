@@ -1,249 +1,372 @@
-## API
+# API Cocoon DI
 
-> Méthodes pour enregistrer les services:
+Cette documentation détaille l'ensemble des méthodes disponibles dans le conteneur d'injection de dépendances Cocoon DI.
 
-* La méthode **bind($alias, $service = null)** du conteneur permet d'initiliser tous types de services
+## Table des matières
 
-|$alias|$services|
-|--------|---------|
-|string 'mon.alias'  |null| 
-|résolution de nom de classe User::class|int| 
-|Chemin complet d'une classe 'App\Controllers\User'|string| 
-| |array   | 
-| |callable   | 
-| |résolution de nom de classe User::class|
-| |Chemin complet d'une classe 'App\Controllers\User'|
-| |Tableau associatif avec les clefs réservées @class, @constructor, @methods, @singleton, @factory, @arguments; @lazy|
+- [Méthodes d'enregistrement des services](#méthodes-denregistrement-des-services)
+  - [bind()](#bind)
+  - [singleton()](#singleton)
+  - [factory()](#factory)
+  - [lazy()](#lazy)
+  - [addServices()](#addservices)
+- [Méthodes de vérification](#méthodes-de-vérification)
+  - [has()](#has)
+  - [getServices()](#getservices)
+- [Méthodes de récupération](#méthodes-de-récupération)
+  - [get()](#get)
+  - [make()](#make)
 
-Exemple:
+## Méthodes d'enregistrement des services
+
+### bind()
+
+Enregistre un service dans le conteneur avec différentes options de configuration.
+
+```php
+public function bind(string|object $alias, mixed $service = null): void
+```
+
+#### Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `$alias` | `string` ou `object` | Identifiant du service (alias ou nom de classe) |
+| `$service` | `mixed` | Service à enregistrer (optionnel) |
+
+#### Exemples d'utilisation
 
 ```php
 <?php
+declare(strict_types=1);
+
 use Cocoon\Dependency\Container;
 
-$di = Container::getInstance();
-// string
-$di->bind('mon.alias', 'je suis une chaîne de caractère');
-// int
-$di->bind('mon.numero', 156250);
-// array 
-$di->bind('mon.tableau', ['db' => 'mysql', 'port' => 3600]);
-// callable
-$di->bind('app.user', function() {
-    return new User();
-});
-//  string alias et résolution de nom de classe
-$di->bind('app.user', User::class);
-//  string alias et chemin complet de classe
-$di->bind('app.user', 'App\Controllers\User');
-// Enregistrement Résolution de nom de classe
-$di->bind(User::class);
-// Enregistrement avec le chemin complet de classe
-$di->bind('App\Controllers\User');
-// string alias et constructor injection
-$di->bind('app.user', ['@class' => User::class,
-                       '@constructor' => ['arg1', 'arg2']
-                       ]);
-// méthodes injection avec la clef réservée @methods
-$di->bind('app.user', ['@class' => User::class,
-                       '@methods' => ['setName' => ['Doe'],
-                                      'setSurName' => ['John']
-                                      ]
-                       ]);
-//  singleton injection
-$di->bind('app.user', ['@class' => User::class,
-                       '@singleton' => true
-                       ]);
-// ou
-$di->bind(User::class, ['@singleton' => true]);
-// factory injection
-$di->bind(User::class, [
-    '@factory' => [UserFactory::class, 'getUser']
-    ]);
-// factory injection avec arguments dans la méthode
-$di->bind(User::class, [
-      '@factory' => [UserFactory::class, 'getUser'],
-      '@arguments' => ['arg1', 'arg2']
-      ]); 
-// lazy injection
-$di->bind(User::class, ['@lazy' => true]);
-// lazy injection avec paramètres dans le constructeur de la classe
-$di->bind(User::class, [
+$container = Container::getInstance();
+
+// Enregistrement d'une valeur simple
+$container->bind('db.dsn', 'mysql:host=localhost;dbname=test');
+
+// Enregistrement d'un tableau
+$container->bind('app.config', [
+    'env' => 'production',
+    'debug' => false
+]);
+
+// Enregistrement d'une classe
+$container->bind(UserService::class);
+
+// Enregistrement avec injection par constructeur
+$container->bind(UserService::class, [
+    '@class' => UserService::class,
+    '@constructor' => [LoggerInterface::class]
+]);
+
+// Enregistrement avec injection par méthodes
+$container->bind(UserService::class, [
+    '@class' => UserService::class,
+    '@methods' => [
+        'setConfig' => [['debug' => true]],
+        'setLogger' => [LoggerInterface::class]
+    ]
+]);
+
+// Enregistrement en tant que singleton
+$container->bind(UserService::class, [
+    '@class' => UserService::class,
+    '@singleton' => true
+]);
+
+// Enregistrement avec factory
+$container->bind(UserService::class, [
+    '@factory' => [UserFactory::class, 'createUser']
+]);
+
+// Enregistrement en mode lazy
+$container->bind(UserService::class, [
     '@lazy' => true,
-    '@constructor' => ['arg1', 'arg2']
-    ]);
+    '@constructor' => [LoggerInterface::class]
+]);
 ```
-* La méthode **singleton($alias, $service = null)** du conteneur permet d'initialiser un service (object) qui retournera toujours la même instance de classe. [En savoir plus](https://github.com/cocoon-projet/di/blob/master/docs/singleton.md)
 
-|$alias|$services|
-|-------|-------------|
-|string 'mon.singleton'  |null| 
-|résolution de nom de classe MaClasse::class|résolution de nom de classe MaClasse::class| 
-|Chemin complet d'une classe 'App\Controllers\Maclass'|Chemin complet d'une classe 'App\Controllers\Maclass'| 
+### singleton()
 
-Exemple:
+Enregistre un service en tant que singleton. Le conteneur retournera toujours la même instance.
+
+```php
+public function singleton(string|object $alias, mixed $service = null): void
+```
+
+#### Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `$alias` | `string` ou `object` | Identifiant du service |
+| `$service` | `mixed` | Service à enregistrer (optionnel) |
+
+#### Exemples d'utilisation
 
 ```php
 <?php
+declare(strict_types=1);
+
 use Cocoon\Dependency\Container;
 
-$di = Container::getInstance();
+$container = Container::getInstance();
 
-$di->singleton('mon.singleton', 'App\Controllers\Maclass');
-// ou
-$di->singleton('mon.singleton', Maclass::class);
-//ou
-$di->singleton('App\Controllers\Maclass');
-// ou
-$di->singleton(Maclass::class);
+// Enregistrement d'un singleton
+$container->singleton('logger', Logger::class);
+
+// Enregistrement d'un singleton avec alias
+$container->singleton('app.logger', Logger::class);
+
+// Enregistrement d'un singleton par nom de classe
+$container->singleton(Logger::class);
 ```
 
-* La méthode **factory($alias, $callable = [], $vars = [])** du conteneur permet d'inialiser un service (object) a partir d'une autre classe via une méthode. [En savoir plus](https://github.com/cocoon-projet/di/blob/master/docs/factory.md)
+### factory()
 
-|$alias|$callable|$vars|
-|-------|-------------|------------|
-|string 'mon.factory'  |Array [MaclasseFactory::class, 'getMaClasse']| Array Arguments ['arg1', 'arg2'] |
-|résolution de nom de classe MaClasse::class||
-|Chemin complet d'une classe 'App\Controller\Maclasse'| 
+Enregistre un service en utilisant une factory pour sa création.
 
-Exemple:
+```php
+public function factory(string|object $alias, array $callable = [], array $vars = []): void
+```
+
+#### Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `$alias` | `string` ou `object` | Identifiant du service |
+| `$callable` | `array` | Tableau contenant la classe factory et la méthode à appeler |
+| `$vars` | `array` | Arguments à passer à la méthode factory |
+
+#### Exemples d'utilisation
 
 ```php
 <?php
+declare(strict_types=1);
+
 use Cocoon\Dependency\Container;
 
-$di = Container::getInstance();
+$container = Container::getInstance();
 
-$di->factory('mon.factory', [MaClasseFactory::class, 'getMaclasse']);
-// ou
-$di->factory('mon.factory', ['App\Factory\MaClasseFactory', 'getMaclasse']);
-// ou 
-$di->factory(MaClasse::class, [MaClasseFactory::class, 'getMaclasse']);
-// Si la méthode de la classe factory a des arguments
-$di->factory(MaClasse::class, [MaClasseFactory::class, 'getMaclasse'], ['arg1', 'arg2']);
+// Enregistrement avec factory simple
+$container->factory(UserService::class, [
+    UserFactory::class,
+    'createUser'
+]);
 
+// Enregistrement avec factory et arguments
+$container->factory(UserService::class, [
+    UserFactory::class,
+    'createUser'
+], ['arg1', 'arg2']);
 ```
 
-* La méthode **lazy($class, $params = [])** du conteneur permet le lazy loading d'une classe. [En savoir plus](https://github.com/cocoon-projet/di/blob/master/docs/lazy.md)
+### lazy()
 
-|$class|$params|
-|-------|-------------|
-|résolution de nom de classe MaClasse::class|Array tableau d'arguments pour le constructeur ['arg1, 'arg2'] |
-|Chemin complet d'une classe 'App\Controller\Maclasse'| 
+Enregistre un service en mode lazy loading.
 
-Exemple:
+```php
+public function lazy(string|object $class, array $params = []): void
+```
+
+#### Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `$class` | `string` ou `object` | Classe à charger en mode lazy |
+| `$params` | `array` | Arguments pour le constructeur |
+
+#### Exemples d'utilisation
 
 ```php
 <?php
+declare(strict_types=1);
+
 use Cocoon\Dependency\Container;
 
-$di = Container::getInstance();
+$container = Container::getInstance();
 
-$di->lazy(MaClasse::class);
-// ou
-$di->lazy('App\Services\MaClasse');
-// si le constructeur a des arguments
-$di->lazy(MaClasse::class, ['arg1', 'arg2']);
+// Enregistrement en mode lazy
+$container->lazy(UserService::class);
+
+// Enregistrement en mode lazy avec arguments
+$container->lazy(UserService::class, [
+    'name' => 'John',
+    'email' => 'john@example.com'
+]);
 ```
 
-* La méthode **addServices($services = null)** permet d'enregistrer les services à partir d'un tableau ou un fichier de configuration retournant un tableau de services. [En savoir plus](https://github.com/cocoon-projet/di/blob/master/docs/array_ou_fichier_de_configuration.md)
+### addServices()
 
-$services|
-|-------|
-|Array (un tableau de services ou un fichier qui retourne une tableau de services)|
+Enregistre plusieurs services à partir d'un tableau ou d'un fichier de configuration.
 
-Exemple:
+```php
+public function addServices(array|string $services = null): void
+```
+
+#### Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `$services` | `array` ou `string` | Tableau de services ou chemin vers un fichier de configuration |
+
+#### Exemples d'utilisation
 
 ```php
 <?php
+declare(strict_types=1);
+
 use Cocoon\Dependency\Container;
 
-$di = Container::getInstance();
+$container = Container::getInstance();
 
-// Tableau de services  [ alias => services ]
-$di->addServices([
-    'database' => 'mysql',
-    'config' => ['mode' => 'dev', 'debug' => true],
-    'app.user' => User::class,
-    'request' => [
-        '@class' => Request::class,
+// Enregistrement à partir d'un tableau
+$container->addServices([
+    'db.dsn' => 'mysql:host=localhost;dbname=test',
+    'app.config' => [
+        'env' => 'production',
+        'debug' => false
+    ],
+    UserService::class => [
+        '@class' => UserService::class,
         '@singleton' => true
     ]
 ]);
 
-// ou un fichier qui retourne un tableau de services
-$di->addServices('config.php');
+// Enregistrement à partir d'un fichier
+$container->addServices('config/services.php');
 ```
 
-> Méthode qui vérifie si un service est enregistré:
+## Méthodes de vérification
 
-* La méthode **has($alias)** du conteneur permet de vérifier si un service éxiste
+### has()
 
-Utilisation:
+Vérifie si un service est enregistré dans le conteneur.
+
+```php
+public function has(string|object $alias): bool
+```
+
+#### Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `$alias` | `string` ou `object` | Identifiant du service à vérifier |
+
+#### Exemples d'utilisation
 
 ```php
 <?php
+declare(strict_types=1);
+
 use Cocoon\Dependency\Container;
 
-$di = Container::getInstance();
+$container = Container::getInstance();
 
-$di->bind('service', 'mon service');
-// on vérifie si le service éxiste
-if ($di->has('service')) {
-    return $di->get('service');
+if ($container->has('logger')) {
+    $logger = $container->get('logger');
+    $logger->info('Service trouvé');
 }
-
 ```
 
-> Méthode qui retourne l'ensemble des services enregistrés
+### getServices()
 
-* La méthode **getServices()** du conteneur permet de contrôler l'ensemble des services enregistrés.
+Retourne tous les services enregistrés dans le conteneur.
 
-Utilisation:
+```php
+public function getServices(): array
+```
+
+#### Exemples d'utilisation
 
 ```php
 <?php
+declare(strict_types=1);
+
 use Cocoon\Dependency\Container;
 
-$di = Container::getInstance();
+$container = Container::getInstance();
 
-// Tableau de services  [ alias => services ]
-$di->addServices([
-    'database' => 'mysql',
-    'config' => ['mode' => 'dev', 'debug' => true],
-    'app.user' => User::class,
-    'request' => [
-        '@class' => Request::class,
-        '@singleton' => true
-    ]
+// Récupération de tous les services
+$services = $container->getServices();
+
+// Affichage des services
+print_r($services);
+```
+
+## Méthodes de récupération
+
+### get()
+
+Récupère un service enregistré dans le conteneur.
+
+```php
+public function get(string|object $alias): mixed
+```
+
+#### Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `$alias` | `string` ou `object` | Identifiant du service à récupérer |
+
+#### Exemples d'utilisation
+
+```php
+<?php
+declare(strict_types=1);
+
+use Cocoon\Dependency\Container;
+
+$container = Container::getInstance();
+
+// Récupération d'un service
+$logger = $container->get('logger');
+
+// Récupération par nom de classe
+$userService = $container->get(UserService::class);
+```
+
+### make()
+
+Crée une nouvelle instance d'une classe avec l'autowiring.
+
+```php
+public function make(string|object $class, mixed $mixed = null, array $vars = []): object
+```
+
+#### Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `$class` | `string` ou `object` | Classe à instancier |
+| `$mixed` | `mixed` | Arguments du constructeur ou nom d'une méthode |
+| `$vars` | `array` | Arguments pour la méthode spécifiée |
+
+#### Exemples d'utilisation
+
+```php
+<?php
+declare(strict_types=1);
+
+use Cocoon\Dependency\Container;
+
+$container = Container::getInstance();
+
+// Création simple avec autowiring
+$userService = $container->make(UserService::class);
+
+// Création avec arguments du constructeur
+$userService = $container->make(UserService::class, [
+    'name' => 'John',
+    'email' => 'john@example.com'
 ]);
-// Retourne les services enregistrés
-var_dump($di->getServices());
+
+// Création et appel d'une méthode
+$user = $container->make(UserService::class, 'createUser', [
+    'name' => 'John',
+    'email' => 'john@example.com'
+]);
 ```
-
-> Méthodes pour retourner les services:
-
-* La méthode **get($alias)** du conteneur permet de retourner un service enregistré;
-
-```php
-<?php
-use Cocoon\Dependency\Container;
-
-$di = Container::getInstance();
-
-$di->bind(Maclasse::class);
-
-// on retourne le service
-$service = $di->get(Maclasse::class);    
-
-```
-
-* La méthode **make($class, $mixed = null, $vars = [])** du conteneur permet de gérer L'autowiring. [En savoir plus](https://github.com/cocoon-projet/di/blob/master/docs/autowiring.md)
-
-|$class|$mixed|$vars|
-|-----|-----|-----|
-|résolution de nom de classe MaClasse::class|null|array (arguments de la méthode de la classe indiquée dans $mixed)|
-|Chemin complet d'une classe 'App\Controller\Maclasse'|array (arguments du constructeur de la classe)| |
-| |string (nom d'une méthode de la classe)| |
-
-> Note: Si la classe appelée par la méthode make du conteneur contient des objets enregistrés dans le conteneur, ils seront injectés automatiquements dans cette classe.

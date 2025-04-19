@@ -2,6 +2,11 @@
 
 > Cette fonctionnalité permet de créer un objet seulement quand celui ci doit être utilisé.
 
+> **Note importante** : Cette fonctionnalité nécessite l'installation de la bibliothèque `friendsofphp/proxy-manager-lts`. Si vous souhaitez utiliser le lazy loading, vous devez l'installer via Composer :
+> ```bash
+> composer require friendsofphp/proxy-manager-lts
+> ```
+
 Prenons un exemple
 
 ```php
@@ -87,5 +92,5 @@ $di->lazy(LazyClass::class, ['arg1', 'arg2']);
 
 ```
 
-Cette fonctionnalité utilise la bibliothèque php [Ocramius/ProxyManager](https://github.com/Ocramius/ProxyManager). Pour plus d'information vous pouvez consulter la documentation suivante [Lazy Loading Value Holder Proxy](https://ocramius.github.io/ProxyManager/docs/lazy-loading-value-holder.html)
+Cette fonctionnalité utilise la bibliothèque php [FriendsOfPHP/ProxyManager-LTS](https://github.com/FriendsOfPHP/proxy-manager-lts). Pour plus d'information vous pouvez consulter la documentation suivante [Lazy Loading Value Holder Proxy](https://ocramius.github.io/ProxyManager/docs/lazy-loading-value-holder.html)
 

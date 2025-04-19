@@ -1,5 +1,5 @@
 <?php
-namespace Injection\Core;
+namespace Tests\Injection\Core;
 
 class PostController implements ControllerInterface
 {

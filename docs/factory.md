@@ -1,115 +1,233 @@
-## Factory injection
+# Pattern Factory avec Cocoon DI
 
-Vous pouvez instancier une classe via une autre classe et une méthode ou une méthode statique ou une classe avec la méthode magique __invoke
+Le pattern Factory permet de déléguer la création d'objets à une classe spécialisée, offrant ainsi plus de flexibilité et de contrôle sur le processus d'instanciation.
+
+## Définition des classes
+
+### Classe à instancier
 
 ```php
 <?php
+declare(strict_types=1);
+
 namespace App\Services;
-         
-class Item 
+
+class User
 {
+    private string $name;
+    private string $email;
     
+    public function __construct(string $name, string $email)
+    {
+        $this->name = $name;
+        $this->email = $email;
+    }
+    
+    public function getName(): string
+    {
+        return $this->name;
+    }
+    
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
 }
 ```
-Les classes Factory
+
+### Différents types de Factory
+
+#### Factory classique
 
 ```php
 <?php
+declare(strict_types=1);
+
 namespace App\Services;
 
-class ItemFactory
+class UserFactory
 {
-    public function create()
+    public function createUser(string $name, string $email): User
     {
-        return new Item();
-    }
-}
-//ou
-class ItemStaticFactory
-{
-    public static function create()
-    {
-        return new Item();
-    }
-}
-
-//ou
-
-class ItemInvokeFactory
-{
-    public function __invoke()
-    {
-        return new Item();
+        return new User($name, $email);
     }
 }
 ```
 
-Utilisation
+#### Factory statique
 
 ```php
 <?php
-use Cocoon\Dependency\Container;
-use App\Services\Item;
-use App\Services\ItemFactory;
-use App\Services\ItemStaticFactory;
-use App\Services\ItemInvokeFactory;
+declare(strict_types=1);
 
-$di = Container::getInstance();
+namespace App\Services;
 
-$di->bind(Item::class, ['@factory' => [ItemFactory::class, 'create']]);
-// ou $di->bind(Item::class, ['@factory' => [ItemStaticFactory::class, 'create']]);
-// ou $di->bind(Item::class, ['@factory' => [ItemInvokeFactory::class]]);
-
-$service = $di->get(Item::class);
-
-var_dump($service instanceof App\Services\Item); //true
-```
-Vous obtenez la même résultat avec le code suivant
-
-```php
-<?php
-use Cocoon\Dependency\Container;
-use App\Services\Item;
-use App\Services\ItemFactory;
-
-$di = Container::getInstance();
-
-$di->bind('item.factory', [
-    '@factory' => [ItemFactory::class, 'create']]);
-
-$service = $di->get('item.factory');
-
-var_dump($service instanceof App\Services\Item); //true
+class UserStaticFactory
+{
+    public static function createUser(string $name, string $email): User
+    {
+        return new User($name, $email);
+    }
+}
 ```
 
-Vous pouvez aussi utiliser la méthode factory du container
+#### Factory avec __invoke
 
 ```php
 <?php
-use Cocoon\Dependency\Container;
-use App\Services\Item;
-use App\Services\ItemFactory;
+declare(strict_types=1);
 
-$di = Container::getInstance();
+namespace App\Services;
 
-$di->factory(Item::class, [ItemFactory::class, 'create']);
-
-$service = $di->get(Item::class);
-
-var_dump($service instanceof App\Services\Item); // true
+class UserInvokeFactory
+{
+    public function __invoke(string $name, string $email): User
+    {
+        return new User($name, $email);
+    }
+}
 ```
-> Note: Il est possible d'injecter des arguments suplémentaires à la fonction appelée.
 
-Vous pouvez procéder de la manière suivante
+## Utilisation avec le conteneur
+
+### Méthode 1 : Utilisation de bind() avec @factory
 
 ```php
 <?php
+declare(strict_types=1);
 
-$di->bind('class.factory', [
-    '@factory' => [MaclassFactory::class, 'create'], 
-    '@arguments' => ['arg1', 'arg2']
-    ]);
-// ou
+use Cocoon\Dependency\Container;
+use App\Services\{User, UserFactory, UserStaticFactory, UserInvokeFactory};
 
-$di->factory('class.factory', [MaClassFactory::class, 'create'], ['arg1', 'arg2']);
+$container = Container::getInstance();
+
+// Factory classique
+$container->bind(User::class, [
+    '@factory' => [UserFactory::class, 'createUser']
+]);
+
+// Factory statique
+$container->bind(User::class, [
+    '@factory' => [UserStaticFactory::class, 'createUser']
+]);
+
+// Factory avec __invoke
+$container->bind(User::class, [
+    '@factory' => [UserInvokeFactory::class]
+]);
+
+// Récupération de l'instance
+$user = $container->get(User::class);
+```
+
+### Méthode 2 : Utilisation de la méthode factory()
+
+```php
+<?php
+declare(strict_types=1);
+
+use Cocoon\Dependency\Container;
+use App\Services\{User, UserFactory};
+
+$container = Container::getInstance();
+
+// Enregistrement de la factory
+$container->factory(User::class, [UserFactory::class, 'createUser']);
+
+// Récupération de l'instance
+$user = $container->get(User::class);
+```
+
+## Passage d'arguments à la factory
+
+### Avec bind()
+
+```php
+<?php
+declare(strict_types=1);
+
+use Cocoon\Dependency\Container;
+use App\Services\{User, UserFactory};
+
+$container = Container::getInstance();
+
+$container->bind(User::class, [
+    '@factory' => [UserFactory::class, 'createUser'],
+    '@arguments' => ['John Doe', 'john@example.com']
+]);
+
+$user = $container->get(User::class);
+```
+
+### Avec factory()
+
+```php
+<?php
+declare(strict_types=1);
+
+use Cocoon\Dependency\Container;
+use App\Services\{User, UserFactory};
+
+$container = Container::getInstance();
+
+$container->factory(
+    User::class,
+    [UserFactory::class, 'createUser'],
+    ['John Doe', 'john@example.com']
+);
+
+$user = $container->get(User::class);
+```
+
+## Bonnes pratiques
+
+1. Utilisez des factories pour :
+   - La création d'objets complexes
+   - L'encapsulation de la logique de création
+   - La gestion des dépendances de création
+   - La validation des données avant la création
+
+2. Nommez vos méthodes de factory de manière descriptive :
+   - `createUser()`
+   - `buildUser()`
+   - `makeUser()`
+
+3. Utilisez le typage strict pour les paramètres et les retours
+
+4. Documentez les paramètres attendus et les valeurs de retour
+
+## Exemple complet
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace App\Services;
+
+class UserFactory
+{
+    private LoggerInterface $logger;
+    
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+    
+    public function createUser(string $name, string $email): User
+    {
+        $this->logger->info("Création d'un nouvel utilisateur : $name");
+        
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new \InvalidArgumentException("Email invalide : $email");
+        }
+        
+        return new User($name, $email);
+    }
+}
+
+// Utilisation
+$container->bind(User::class, [
+    '@factory' => [UserFactory::class, 'createUser'],
+    '@arguments' => ['John Doe', 'john@example.com']
+]);
 ```

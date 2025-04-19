@@ -1,35 +1,52 @@
 <?php
+declare(strict_types=1);
 
+namespace Tests;
 
 use Cocoon\Dependency\Container;
-use Injection\Autowire\B;
-use Injection\Autowire\D;
-use Injection\Core\ItemController;
+use Tests\Injection\Core\Services\UserService;
+use Tests\Injection\Core\Services\Logger;
+use Tests\Injection\Core\Interfaces\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 
 class ContainerArrayServicesDefinitionsTest extends TestCase
 {
-    private $service;
+    private Container $container;
 
-    protected function setUp() :void
+    protected function setUp(): void
     {
-        $this->service = Container::getInstance();
-        $this->service->addservices([
-            'db.dsn' => 'mysql:host=localhost;dbname=testdb',
-            'db.port' => 3306,
-            'app.config' => ['mode' => 'production', 'debug' => false],
-            'item' => 'Injection\Core\ItemController',
-            // alias => @alias(l'alias  est le service)
-            D::class => '@alias',
-            B::class => ['@constructor' => [D::class]]
-        ]);
+        $this->container = Container::getInstance();
+        $this->container->reset();
     }
 
-    public function testArrayServicesConfiguration()
+    public function testArrayServicesDefinitions(): void
     {
-        $this->assertEquals('mysql:host=localhost;dbname=testdb', $this->service->get('db.dsn'));
-        $this->assertInstanceOf(ItemController::class, $this->service->get('item'));
-        $this->assertInstanceOf(B::class, $this->service->get(B::class));
-    }
+        $services = [
+            LoggerInterface::class => Logger::class,
+            UserService::class => [
+                '@class' => UserService::class,
+                '@constructor' => [
+                    LoggerInterface::class
+                ],
+                '@methods' => [
+                    'setConfig' => [['debug' => true]]
+                ]
+            ],
+            'app.config' => [
+                'env' => 'test',
+                'debug' => true
+            ]
+        ];
 
+        $this->container->addServices($services);
+
+        $userService = $this->container->get(UserService::class);
+        $services = $this->container->getServices();
+        $this->assertIsArray($services);
+        $this->assertEquals(count($services), 3);
+
+        $this->assertInstanceOf(UserService::class, $userService);
+        $this->assertInstanceOf(Logger::class, $userService->getLogger());
+        $this->assertTrue($this->container->get('app.config')['debug']);
+    }
 }

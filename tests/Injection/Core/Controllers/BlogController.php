@@ -1,8 +1,8 @@
 <?php
 
-namespace Injection\Core\Controllers;
+namespace Tests\Injection\Core\Controllers;
 
-use Injection\Core\ItemController;
+use Tests\Injection\Core\ItemController;
 
 class BlogController
 {

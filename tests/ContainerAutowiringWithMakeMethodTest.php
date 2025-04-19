@@ -1,80 +1,97 @@
 <?php
+declare(strict_types=1);
 
-use Cocoon\Dependency\Container;
-use Injection\Autowire\B;
-use Injection\Autowire\C;
-use Injection\Autowire\D;
-use Injection\Autowire\Params;
-use Injection\Core\Controllers\BlogController;
+namespace Tests;
+
 use PHPUnit\Framework\TestCase;
-use Injection\Autowire\A;
+use Cocoon\Dependency\Container;
+use Tests\Injection\Core\ItemController;
+use Tests\Injection\Autowire\{A, B, C, D, Params};
+use Tests\Injection\Core\Controllers\BlogController;
 
 class ContainerAutowiringWithMakeMethodTest extends TestCase
 {
-    private $service;
+    private Container $container;
 
-    protected function setUp() :void
+    protected function setUp(): void
     {
-        $this->service = Container::getInstance();
+        $this->container = Container::getInstance();
+        $this->container->getServices() === [] || $this->container->reset();
     }
 
-    public function testAutowiringMultiObjectInjection()
+    public function testAutowiringMultiObjectInjection(): void
     {
-        $A = $this->service->make(A::class);
-        $this->assertInstanceOf(A::class, $A);
-        $this->assertInstanceOf(B::class, $A->b);
-        $this->assertInstanceOf(C::class, $A->c);
-        $this->assertInstanceOf(D::class, $A->b->d);
+        $a = $this->container->make(A::class);
+        
+        $this->assertInstanceOf(A::class, $a);
+        $this->assertInstanceOf(B::class, $a->b);
+        $this->assertInstanceOf(C::class, $a->c);
+        $this->assertInstanceOf(D::class, $a->b->d);
     }
 
-    public function testAutowiringWithParametersConstructor()
+    public function testAutowiringWithParametersConstructor(): void
     {
-        $test = $this->service->make(Params::class, ['name' => 'Doe', 'surname' => 'John']);
+        $test = $this->container->make(Params::class, [
+            'name' => 'Doe',
+            'surname' => 'John'
+        ]);
+        
         $this->assertInstanceOf(Params::class, $test);
         $this->assertEquals('Doe', $test->getName());
         $this->assertEquals('John', $test->getSurname());
     }
 
-    public function testAutowireWithParametersMethod()
+    public function testAutowireWithParametersMethod(): void
     {
-        $test = $this->service->make(Params::class, 'setName', ['name' => 'Doe_2']);
+        $controller = $this->container->make(Params::class);
+        $test = $controller->setName('Doe_2');
+        
         $this->assertEquals('Doe_2', $test->getName());
     }
 
-    public function testAutowireteWithObjectConstructorParamForMethod()
+    public function testAutowireWithObjectConstructorParamForMethod(): void
     {
-        $test = $this->service->make(BlogController::class, 'index');
-        $this->assertTrue(is_array($test));
+        $test = $this->container->make(BlogController::class,'index');
+        
+        $this->assertIsArray($test);
         $this->assertEquals('titre 1', $test[0]['titre']);
     }
 
-    public function testAutowireteWithObjectConstructorParamAndParamMethod()
+    public function testAutowireWithObjectConstructorParamAndParamMethod(): void
     {
-        $test = $this->service->make(BlogController::class, 'getId', ['id' => 2]);
+        $test = $this->container->make(BlogController::class, 'getId', ['id' => 2]);
+        
+        $this->assertIsArray($test);
         $this->assertEquals('titre 3', $test['titre']);
     }
 
-    public function testAutowireCombineObjectAndStringParamsForMethod()
+    public function testAutowireCombineObjectAndStringParamsForMethod(): void
     {
-        $test = $this->service->make(BlogController::class, 'item', ['append' => '_string']);
+        $test = $this->container->make(BlogController::class, 'item', ['append' => '_string']);
+        
         $this->assertEquals('factory_string', $test);
     }
 
-    public function testAutowireCombineObjectAndStringParamsForConstructor()
+    public function testAutowireCombineObjectAndStringParamsForConstructor(): void
     {
-        $test = $this->service->make(BlogController::class, ['param' => 'je suis un paramètre']);
+        $test = $this->container->make(BlogController::class, [
+            'param' => 'je suis un paramètre'
+        ]);
+        
         $this->assertEquals('je suis un paramètre', $test->param);
     }
 
-    public function testAutowireSimpleClass()
+    public function testAutowireSimpleClass(): void
     {
-        $test = $this->service->make(D::class, 'test', ['param' => 'ok']);
+        $test = $this->container->make(D::class, 'test', ['param' => 'ok']);
+        
         $this->assertEquals('ok', $test);
     }
 
-    public function testAutowireSimpleClassWithNoragumentConstructor()
+    public function testAutowireSimpleClassWithNoArgumentConstructor(): void
     {
-        $test = $this->service->make(C::class);
+        $test = $this->container->make(C::class);
+        
         $this->assertInstanceOf(C::class, $test);
     }
 }

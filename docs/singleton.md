@@ -1,43 +1,74 @@
-## Singleton injection
+# Singletons dans Cocoon DI
+
+## Définition d'un Singleton
 
 ```php
 <?php
-namespace App\Services;
+declare(strict_types=1);
 
-class Persons
-{
-    
-}    
-```
-
-Maintenant il y a plusieurs moyens d'enregistrer la classe en singleton dans le container.
-
-```php
-<?php
 use Cocoon\Dependency\Container;
 
-use App\Services\Persons;
+// Méthode simple
+$container->singleton(Database::class);
 
-$di = Container::getInstance();  
+// Avec une classe différente
+$container->singleton(DatabaseInterface::class, MySQLDatabase::class);
 
-// string alias
-$di->bind('mon_singleton', ['@class' => Persons::class, '@singleton' => true]);
-// ou class alias
-$di->bind(Persons::class, ['@singleton' => true]);
-// ou utiliser la méthode singleton du container
-$di->singleton('mon_singleton', Persons::class);
-// ou 
-$di->singleton(Persons::class);
+// Configuration complète
+$container->singleton(Cache::class, [
+    '@class' => RedisCache::class,
+    '@constructor' => [
+        'host' => 'localhost',
+        'port' => 6379
+    ]
+]);
 
-// Retourner le service
-
-$service1 = $di->get('mon_singleton');
-$service2 = $di->get('mon_singleton');
-// ou 
-$service3 = $di->get(Persons::class);
-$service4 = $di->get(Persons::class);
-
-var_dump($service1 == $service2); // true
-var_dump($service3 == $service4); // true
+// Via configuration array
+$container->addServices([
+    'db' => [
+        '@class' => Database::class,
+        '@singleton' => true,
+        '@constructor' => [
+            'config' => ['host' => 'localhost']
+        ]
+    ]
+]);
 ```
-> La même instance est retournée.
+
+## Utilisation avec PHP 8.x
+
+```php
+// Utilisation avec readonly (PHP 8.1+)
+readonly class Configuration
+{
+    public function __construct(
+        public string $env,
+        public array $options
+    ) {}
+}
+
+$container->singleton(Configuration::class, [
+    '@constructor' => [
+        'env' => 'prod',
+        'options' => ['debug' => false]
+    ]
+]);
+
+// Utilisation avec les énumérations (PHP 8.1+)
+enum Environment
+{
+    case DEVELOPMENT;
+    case PRODUCTION;
+    case TESTING;
+}
+
+$container->singleton(Environment::class, Environment::PRODUCTION);
+```
+
+## Bonnes pratiques
+
+1. Limitez l'utilisation des singletons aux cas nécessaires
+2. Préférez l'injection de dépendances standard quand possible
+3. Utilisez les singletons pour les ressources partagées (DB, Cache, Config)
+4. Documentez l'utilisation des singletons
+5. Testez la réutilisation correcte des instances

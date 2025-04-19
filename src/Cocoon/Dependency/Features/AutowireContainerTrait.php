@@ -2,6 +2,9 @@
 namespace Cocoon\Dependency\Features;
 
 use ReflectionClass;
+use ReflectionParameter;
+use ReflectionNamedType;
+use ReflectionUnionType;
 
 /**
  * Autowiring implémentation
@@ -73,21 +76,56 @@ trait AutowireContainerTrait
      * @return array
      * @throws \ReflectionException
      */
-    protected function resolveInjection($parameters = [], $vars = []) :array
+    protected function resolveInjection(array $parameters, array $vars = []): array
     {
-        $params = [];
-        foreach ($parameters as $param) {
-            if ($param->getType() && !$param->getType()->isBuiltin()) {
-                $class_name = $param->getType()->getName();
-                $params[] = ($this->has($class_name)) ? $this->get($class_name) : $this->make($class_name);
-            } else {
-                if (isset($vars[$param->getName()])) {
-                    $params[] = $vars[$param->getName()];
-                } else {
-                    $params[] = ($param->isDefaultValueAvailable() == false) ? null : $param->getDefaultValue();
+        return array_map(
+            function (ReflectionParameter $param) use ($vars) {
+                $type = $param->getType();
+                
+                // Gestion des types union de PHP 8
+                if ($type instanceof ReflectionUnionType) {
+                    foreach ($type->getTypes() as $unionType) {
+                        if (!$unionType->isBuiltin()) {
+                            $className = $unionType->getName();
+                            return $this->resolveClassName($className);
+                        }
+                    }
                 }
-            }
-        }
-        return $params;
+                
+                // Gestion des types simples et null
+                if ($type === null || ($type instanceof ReflectionNamedType && !$type->isBuiltin())) {
+                    $className = $type === null ? null : $type->getName();
+                    if ($className !== null) {
+                        return $this->resolveClassName($className);
+                    }
+                }
+                
+                // Gestion des paramètres nommés
+                $paramName = $param->getName();
+                if (isset($vars[$paramName])) {
+                    return $vars[$paramName];
+                }
+                
+                // Valeur par défaut ou null
+                return $param->isDefaultValueAvailable() 
+                    ? $param->getDefaultValue() 
+                    : null;
+            },
+            $parameters
+        );
+    }
+    /**
+     * Résout une classe par son nom
+     *
+     * @template T of object
+     * @param class-string<T> $className
+     * @return T
+     * @throws \ReflectionException
+     */
+    private function resolveClassName(string $className): object
+    {
+        return $this->has($className) 
+            ? $this->get($className) 
+            : $this->make($className);
     }
 }

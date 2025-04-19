@@ -1,6 +1,6 @@
 <?php
 
-namespace Injection\Core\Controllers;
+namespace Tests\Injection\Core\Controllers;
 
 
 class BlogModel

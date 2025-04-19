@@ -1,6 +1,6 @@
 <?php
 
-namespace Injection\Core;
+namespace Tests\Injection\Core;
 
 
 class ItemStaticFactory

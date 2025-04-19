@@ -1,6 +1,6 @@
 <?php
 
-namespace Injection\Proxy;
+namespace Tests\Injection\Proxy;
 
 
 class MyProxyClass

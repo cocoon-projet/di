@@ -1,57 +1,79 @@
-## Constructeur injection
+# Injection par Constructeur
 
-Imaginons un controller Article qui a besoin de récupérer les articles d'une Classe ArticleRepository
-et avec un autre paramètre pour l'exemple.
+L'injection par constructeur est la méthode recommandée pour l'injection de dépendances.
+
+## Utilisation Simple
+
 ```php
 <?php
+declare(strict_types=1);
 
-namespace App\Controllers;
-
-use App\Repositories\ArticleRepository;
-
-class ArticlesController
+class UserService
 {
-    public $repository;
-    
-    public $otherParam;
-    
-    public function __construct(ArticleRepository $repository, $otherParam)
-    {
-        $this->repository = $repository;
-        $this->otherParam = $otherParam;
-    }
+    public function __construct(
+        private readonly UserRepository $repository,
+        private readonly LoggerInterface $logger,
+        private readonly array $config = []
+    ) {}
+}
+
+// Autowiring automatique
+$container->make(UserService::class);
+
+// Configuration explicite
+$container->bind(UserService::class, [
+    '@constructor' => [
+        'repository' => UserRepository::class,
+        'logger' => LoggerInterface::class,
+        'config' => ['cache' => true]
+    ]
+]);
+```
+
+## Fonctionnalités PHP 8.x
+
+### Promotion des Propriétés
+
+```php
+class ProductService
+{
+    public function __construct(
+        private readonly ProductRepository $repository,
+        private readonly EventDispatcher $dispatcher,
+        private readonly ?CacheInterface $cache = null
+    ) {}
 }
 ```
-La classe ArticleRepository
+
+### Types Union
 
 ```php
-<?php
-
-namespace App\Repositories;
-
-class ArticleRepository
+class LogService
 {
-    
+    public function __construct(
+        private LoggerInterface|NullLogger $logger,
+        private string|array $config = []
+    ) {}
 }
 ```
-Enregistrement du service
+
+### Types Intersection (PHP 8.1+)
 
 ```php
-<?php
-use Cocoon\Dependency\Container;
-use App\Repositories\ArticleRepository;
-use App\Controllers\ArticlesController;
-
-$di = Container::getInstance();
-
-// Enregistrement de la classe ArticleRepository
-$di->bind(ArticleRepository::class);
-// Enregistrement de la classe ArticlesController et ses dépendances
-$di->bind(ArticlesController::class, ['@constructor' => [ArticleRepository::class, 'ok']]);
-
-$service = $di->get(ArticlesController::class);
-
-var_dump($service instanceof  App\Controllers\ArticlesController); // true
-var_dump($service->repository instanceof App\Repositories\ArticleRepository); //true
-var_dump($service->otherParam === 'ok'); // true
+class OrderProcessor
+{
+    public function __construct(
+        private readonly (HasId&HasTotal) $order,
+        private readonly PaymentGateway $gateway
+    ) {}
+}
 ```
+
+## Bonnes Pratiques
+
+1. Utilisez la promotion des propriétés
+2. Déclarez les propriétés comme readonly quand possible
+3. Utilisez le typage strict
+4. Documentez les paramètres complexes
+5. Limitez le nombre de dépendances (max 3-4)
+6. Utilisez des interfaces plutôt que des implémentations

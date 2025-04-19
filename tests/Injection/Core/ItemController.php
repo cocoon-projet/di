@@ -1,5 +1,7 @@
 <?php
-namespace Injection\Core;
+declare(strict_types=1);
+
+namespace Tests\Injection\Core;
 
 class ItemController implements ControllerInterface
 {
@@ -38,7 +40,7 @@ class ItemController implements ControllerInterface
         $this->name = $name;
     }
 
-    public function render ()
+    public function render(): string
     {
         return 'factory';
     }

@@ -1,46 +1,47 @@
 <?php
+declare(strict_types=1);
+
+namespace Tests;
 
 use Cocoon\Dependency\Container;
-use Injection\Core\ItemStaticFactory;
-use Injection\Core\ItemInvokeFactory;
+use Tests\Injection\Factory\DatabaseFactory;
+use Tests\Injection\Factory\LoggerFactory;
 use PHPUnit\Framework\TestCase;
-use Injection\Core\itemController;
-use Injection\Core\ItemFactory;
 
 class ContainerFactoryInjectionTest extends TestCase
 {
-    private $service;
+    private Container $container;
 
-    protected function setUp() :void
+    protected function setUp(): void
     {
-        $this->service = Container::getInstance();
-        $this->service->factory(ItemController::class, [itemFactory::class, 'getItem']);
-        $this->service->factory('item.class', [itemFactory::class, 'getItem'], ['name' => 'rasmus']);
-        $this->service->factory('item.factory.static', [itemStaticFactory::class, 'getItem']);
-        $this->service->factory('item.factory.invoke', [itemInvokeFactory::class]);
+        $this->container = Container::getInstance();
+        $this->container->getServices() === [] || $this->container->reset();
     }
 
-    public function testInjectByFactoryMethod()
+    public function testFactoryInjection(): void
     {
-        $test = $this->service->get(ItemController::class);
-        $this->assertEquals('factory ', $test);
-    }
+        // Test factory avec méthode statique
+        $this->container->factory('database', [
+            DatabaseFactory::class,
+            'create'
+        ], [
+            'host' => 'localhost',
+            'name' => 'testdb'
+        ]);
 
-    public function testInjectByFactoryMethodAndParam()
-    {
-        $test = $this->service->get('item.class');
-        $this->assertEquals('factory rasmus', $test);
-    }
+        // Test factory avec méthode d'instance
+        $this->container->factory('logger', [
+            LoggerFactory::class,
+            'createLogger'
+        ], [
+            'channel' => 'test'
+        ]);
 
-    public function testInjectByFactoryMethodStatic()
-    {
-        $test = $this->service->get('item.factory.static');
-        $this->assertEquals('factory', $test);
-    }
+        $db = $this->container->get('database');
+        $logger = $this->container->get('logger');
 
-    public function testInjectByFactoryMethodInvoke()
-    {
-        $test = $this->service->get('item.factory.invoke');
-        $this->assertEquals('factory', $test);
+        $this->assertEquals('localhost', $db->getHost());
+        $this->assertEquals('testdb', $db->getName());
+        $this->assertEquals('test', $logger->getChannel());
     }
 }

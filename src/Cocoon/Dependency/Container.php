@@ -1,257 +1,285 @@
 <?php
+declare(strict_types=1);
+
 namespace Cocoon\Dependency;
 
+use Cocoon\Dependency\Features\AttributesManagerContainerTrait;
+use Cocoon\Dependency\Features\AutowireContainerTrait;
+use Cocoon\Dependency\Features\CompilerContainerTrait;
 use Cocoon\Dependency\Features\ProxyManagerContainerTrait;
 use Cocoon\Dependency\Features\ResolverContainerTrait;
 use Psr\Container\ContainerInterface;
-use Cocoon\Dependency\Features\AutowireContainerTrait;
 use ReflectionClass;
+use ReflectionException;
 
 /**
- * Class Container
- * @package Dependency
+ * PSR-11 Container Implementation
  */
 class Container implements ContainerInterface
 {
-    /**
-     * liste des services enregistrés
-     *
-     * @var array
-     */
-    protected $services = [];
-    /**
-     * Liste des services singleton
-     *
-     * @var array
-     */
-    protected $singleton = [];
-    /**
-     * Instance du container
-     *
-     * @var null
-     */
-    private static $instance = null;
+    use AttributesManagerContainerTrait;
+    use AutowireContainerTrait;
+    use CompilerContainerTrait;
+    use ProxyManagerContainerTrait;
+    use ResolverContainerTrait;
 
-    use AutowireContainerTrait, ResolverContainerTrait, ProxyManagerContainerTrait;
-    /**
-     * Container constructor. privé
-     */
+    /** @var array<string, mixed> */
+    protected array $services = [];
+
+    /** @var array<string, object> */
+    protected array $singleton = [];
+
+    private static ?self $instance = null;
+
     private function __construct()
     {
+        $this->cacheEnabled = false;
     }
 
-    /**
-     * Clonage interdit
-     */
     private function __clone()
     {
     }
 
-    /**
-     * Initialise le container
-     *
-     * @return Container|null instance de Container::class
-     */
-    public static function getInstance() :self
+    public static function getInstance(): self
     {
-        if (is_null(self::$instance)) {
-            self::$instance = new Container();
+        if (self::$instance === null) {
+            self::$instance = new self();
         }
         return self::$instance;
     }
 
     /**
-     * Ajoute les services à partir d'un tableau php ou un fichier
-     *
-     * @param array $services ou nom d'un fichier
-     * @return self
+     * @param array<string, mixed>|string $services
+     * @throws ContainerException
      */
-    public function addServices($services) :self
+    public function addServices(array|string $services): self
     {
-
         if (is_string($services)) {
-            if (file_exists($services)) {
-                $services = require $services;
-            } else {
-                throw new ContainerException('le fichier ' . $services . ' n\'existe pas');
+            if (!file_exists($services)) {
+                throw new ContainerException(
+                    sprintf('Le fichier %s n\'existe pas', $services)
+                );
+            }
+            $services = require $services;
+            
+            if (!is_array($services)) {
+                throw new ContainerException('Le fichier doit retourner un tableau');
             }
         }
-        if (!is_array($services)) {
-            throw new ContainerException('le paramètre services doivent être de type array');
-        }
+
         foreach ($services as $alias => $service) {
             $this->bind($alias, $service);
         }
+        
         return self::getInstance();
     }
 
     /**
-     * Enregistre un service
-     *
-     * @param string $alias alias du service
-     * @param string|array $service
-     * Clefs réservées array(@class, @singleton, @constructor, @methods, @factory, @arguments, @lazy)
-     * définition du service
-     * @return self
+     * @param string|array|bool|null|int|float|object|callable <string, mixed> $service
+     * @throws ContainerException
      */
-    public function bind($alias, $service = '@alias') :self
+    public function bind(string $alias, string|array|bool|null|int|float|object|callable $service = '@alias'): self
     {
-        if (is_numeric($alias) or !is_string($alias)) {
-            throw new ContainerException('l\'alias ou le service doivent être de type string');
+        if (!is_string($alias)) {
+            throw new ContainerException('L\'alias doit être une chaîne de caractères');
         }
-        if ($service === '@alias') {
-            $this->services[trim($alias)] = trim($alias);
-        } else {
-            $this->services[trim($alias)] = $service;
+
+        if (is_object($service) && get_class($service) === \stdClass::class) {
+            throw new ContainerException('Les objets stdClass ne sont pas autorisés comme service');
         }
+
+        $this->services[trim($alias)] = $service === '@alias' ? trim($alias) : $service;
+        
         return self::getInstance();
     }
 
     /**
-     * Retourne le service selon l'alias definit
-     *
-     * @param  string $alias Nom de l'alias
-     * @return string|object  Retourne le service
-     * @throws \ReflectionException
+     * @throws NotFoundServiceException
+     * @throws ReflectionException
      */
-    public function get($alias)
+    public function get(string $alias): mixed
     {
-        if (!$this->has(trim($alias))) {
-            throw new NotFoundServiceException('Ce service:  "'. $alias . '" n\est pas enregistré');
+        if ($this->cacheEnabled && $this->isCompiled()) {
+            return $this->getCompiled($alias);
         }
+
+        $alias = trim($alias);
+        if (!$this->has($alias)) {
+            throw new NotFoundServiceException(
+                sprintf('Le service "%s" n\'est pas enregistré', $alias)
+            );
+        }
+        
         return $this->resolveService($alias);
     }
 
     /**
-     * Résolution des dépendances type factory injection
-     *
-     * @param array $callable
-     * @param array $vars
-     * @return mixed
-     * @throws \ReflectionException
+     * @param array{0: string, 1?: string} $callable
+     * @param array<mixed> $vars
+     * @throws ReflectionException
      */
-    protected function call($callable = [], $vars = [])
+    protected function call(array $callable, array $vars = []): mixed
     {
         if (isset($callable[1])) {
             $class = new ReflectionClass($callable[0]);
-            if ($class->isInstantiable() && !$class->getMethod($callable[1])->isStatic()) {
-                $handler = ($this->has($callable[0])) ? [$this->get($callable[0]), $callable[1]]
-                    : [new $callable[0], $callable[1]];
-            } else {
-                $handler = [$callable[0], $callable[1]];
+            $method = $class->getMethod($callable[1]);
+            
+            if ($class->isInstantiable() && !$method->isStatic()) {
+                $instance = $this->has($callable[0]) 
+                    ? $this->get($callable[0]) 
+                    : new $callable[0]();
+                    
+                return $instance->{$callable[1]}(...$vars);
             }
-        }
-        if (!isset($callable[1])) {
-            $handler = new $callable[0]();
+            
+            return $callable[0]::{$callable[1]}(...$vars);
         }
 
-        return call_user_func_array($handler, $vars);
+        $instance = new $callable[0]();
+        return $instance(...$vars);
     }
 
     /**
-     * initialise un service a partir d'une classe et sa méthode
-     * méthode, méthode static ou une classe avec la méthode __invoke()
-     *
-     * @param string $alias
-     * @param array $callable
-     * @param array $vars
-     * @return self
+     * @param array{0: string, 1?: string} $callable
+     * @param array<mixed> $vars
+     * @throws ContainerException
      */
-    public function factory($alias, $callable = [], $vars = []) :self
+    public function factory(string $alias, array $callable = [], array $vars = []): self
     {
-        $this->bind($alias, ['@factory' => $callable,
-                             '@arguments' => $vars]);
-        return self::getInstance();
+        if (!isset($callable[0]) || !class_exists($callable[0])) {
+            throw new ContainerException('Le callable doit être un tableau contenant une classe valide');
+        }
+
+        if (isset($callable[1]) && !method_exists($callable[0], $callable[1])) {
+            throw new ContainerException(
+                sprintf('La méthode %s n\'existe pas dans la classe %s', $callable[1], $callable[0])
+            );
+        }
+
+        return $this->bind($alias, [
+            '@factory' => $callable,
+            '@arguments' => $vars
+        ]);
     }
 
-    /**
-     * Initialise un service en tant que singleton
-     *
-     * @param string $alias
-     * @param null|object $service
-     * @return Container
-     */
-    public function singleton($alias, $service = null) :self
+    public function singleton(string $alias, string|null $service = null): self
     {
         $class = $service ?? $alias;
-        return $this->bind($alias, ['@class' => $class,
-                             '@singleton' => true]);
+        return $this->bind($alias, [
+            '@class' => $class,
+            '@singleton' => true
+        ]);
     }
 
     /**
-     * initialise un service Lazy Injection
-     *
-     * @param object $class ex: ClassName::class
-     * @param array $params arguments du contructeur
-     * @return Container
+     * @param array<string, mixed> $params
      */
-    public function lazy($class, $params = []) :self
+    public function lazy(string $class, array $params = []): self
     {
-        if (count($params) > 0) {
-            return $this->bind($class, ['@lazy' => true, '@constructor' => $params]);
-        } else {
-            return $this->bind($class, ['@lazy' => true ]);
+        $config = ['@lazy' => true];
+        $config = ['@class' => $class];
+        if ($params !== []) {
+            $config['@constructor'] = $params;
         }
+        
+        return $this->bind($class, $config);
     }
 
-    /**
-     * Verifie si le service est un singleton
-     *
-     * @param  string  $alias alias du service
-     * @return boolean  vrai si le service est un singleton
-     */
-    protected function isSingleton($alias) :bool
+    protected function isSingleton(string $alias): bool
     {
         return isset($this->singleton[$alias]);
     }
-    /**
-     * Vérifie si un service existe
-     *
-     * @param  string  $alias alias du service
-     * @return boolean     vrai si retourne true
-     */
-    public function has($alias) :bool
+
+    public function has(string $alias): bool
     {
         return isset($this->services[$alias]);
     }
-    /**
-     * Verifie si l' option du service existe
-     *
-     * @param  string  $key option définit
-     * @return boolean  retrourne vrai si l'option est identifié
-     */
-    protected function hasOption($alias, $key) :bool
+
+    protected function hasOption(string $alias, string $key): bool
     {
         return isset($this->services[$alias][$key]);
     }
-   /**
-    * Retourne la liste des services enregistrés
-    *
-    * @return array
-    */
-    public function getServices() :array
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getServices(): array
     {
         return $this->services;
     }
-    /**
-     * Met un service en cache (singleton)
-     *
-     * @param  string $alias    alias du service
-     * @param  object $services nom de la classe
-     * @return void
-     */
-    protected function putInCache($alias, $services)
+
+    protected function putInCache(string $alias, object $service): void
     {
-        $this->singleton[$alias] = $services;
+        $this->singleton[$alias] = $service;
     }
-    /**
-     * Retourne un service si il est en cache (type singleton)
-     *
-     * @param  string $alias alias du service
-     * @return object
-     */
-    protected function getFromCache($alias)
+
+    protected function getFromCache(string $alias): object
     {
         return $this->singleton[$alias];
     }
+
+    /**
+     * Réinitialise le container en vidant les services et les singletons
+     */
+    public function reset(): self
+    {
+        $this->services = [];
+        $this->singleton = [];
+        $this->compiled = false;
+        $this->compiledClass = null;
+        return $this;
+    }
+
+    /**
+     * Enregistre un service avec autowiring
+     *
+     * @param string $alias
+     * @param string $class
+     * @param string|null $method
+     * @param array $params
+     * @return self
+     */
+    public function autowire(string $class, ?string $method = null, array $params = [])
+    {
+        return $this->make($class, $method, $params);
+    }
+
+    public function inject(string $alias,array $params = []): self
+    {
+        $config = ['@inject' => true];
+        $config = ['@class' => $alias];
+        if($params !== []) {
+            $config['@constructor'] = $params;
+        }
+        $this->bind($alias, $config);
+        return $this;
+    }
+
+    /**
+     * Configure les dépendances d'un service
+     *
+     * @param array<array<string, string|object>> $dependencies
+     * @return self
+     * @throws ContainerException
+     */
+    public function with(array $dependencies): self
+    {
+        foreach ($dependencies as $dependency) {
+            if (!is_array($dependency)) {
+                throw new ContainerException('Les dépendances doivent être des tableaux');
+            }
+
+            foreach ($dependency as $interface => $implementation) {
+                if (!is_string($interface)) {
+                    throw new ContainerException('L\'interface doit être une chaîne de caractères');
+                }
+
+                $this->bind($interface, $implementation);
+            }
+        }
+
+        return $this;
+    }
+
+
 }

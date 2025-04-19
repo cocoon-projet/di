@@ -1,130 +1,135 @@
 <?php
+declare(strict_types=1);
 
-use Injection\Core\Singleton;
-use Injection\Core\ItemController;
-use Injection\Core\PostController;
-use Injection\Core\SingController;
+namespace Tests;
+
 use Cocoon\Dependency\Container;
+use Tests\Injection\Core\Services\{
+    UserService,
+    Logger,
+    ConfigService,
+    DatabaseService
+};
+use Tests\Injection\Core\Interfaces\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 
-class containerInjectionAliasObjectTest extends TestCase
+class ContainerInjectionAliasObjectTest extends TestCase
 {
-    private $service;
+    private Container $container;
 
-    protected function setUp() :void
+    protected function setUp(): void
     {
-        $this->service = Container::getInstance();
-        $this->service->bind('key.class', ItemController::class);
-        $this->service->bind('class.params', [
-            '@class' => PostController::class,
-            '@constructor' => ['je suis le param un', 'je suis le param deux']
-        ]);
-        $this->service->bind('class.methods', [
-            '@class' => ItemController::class,
-            '@methods' => [
-                'setName' => ['Doe'],
-                'setSurname' => ['John']
+        $this->container = Container::getInstance();
+        $this->container->getServices() === [] || $this->container->reset();
+    }
+
+    public function testSimpleClassInjection(): void
+    {
+        $this->container->bind(Logger::class);
+        $logger = $this->container->get(Logger::class);
+        
+        $this->assertInstanceOf(Logger::class, $logger);
+    }
+
+    public function testInterfaceInjection(): void
+    {
+        $this->container->bind(LoggerInterface::class, Logger::class);
+        $logger = $this->container->get(LoggerInterface::class);
+        
+        $this->assertInstanceOf(Logger::class, $logger);
+        $this->assertInstanceOf(LoggerInterface::class, $logger);
+    }
+
+    public function testConstructorInjection(): void
+    {
+        $this->container->bind(LoggerInterface::class, Logger::class);
+        $this->container->bind(UserService::class, [
+            '@class' => UserService::class,
+            '@constructor' => [
+                'logger' => LoggerInterface::class
             ]
         ]);
-        $this->service->bind('callable.key', function () {
-            return 'je suis un callable';
-        });
-        $this->service->bind('singleton', [
-            '@class' => SingController::class,
-            '@singleton' => true
+
+        $userService = $this->container->get(UserService::class);
+        
+        $this->assertInstanceOf(UserService::class, $userService);
+        $this->assertInstanceOf(Logger::class, $userService->getLogger());
+    }
+
+    public function testMethodInjection(): void
+    {
+        $this->container->bind(ConfigService::class, [
+            '@class' => ConfigService::class,
+            '@methods' => [
+                'setConfig' => [['debug' => true]],
+                'setEnvironment' => ['production']
+            ]
         ]);
-        $this->service->bind('patternn.singleton', Singleton::getInstance());
-        $this->service->bind('patternn.singleton.name', Singleton::class);
-        $this->service->bind('class.name', 'Injection\Core\ItemController');
-        $this->service->bind('class.instance', new ItemController());
+
+        $config = $this->container->get(ConfigService::class);
+        
+        $this->assertTrue($config->getConfig()['debug']);
+        $this->assertEquals('production', $config->getEnvironment());
     }
 
-    /**
-     * Retourne une instance de ItemController::class definit par l'alias key.class
-     * Retourne toujours une nouvelle instance de la class
-     */
-    public function testInjectClass ()
+    public function testComplexInjection(): void
     {
-        $this->assertInstanceOf(ItemController::class, $this->service->get('key.class'));
+        // Configuration des services
+        $this->container->bind(LoggerInterface::class, Logger::class);
+        $this->container->bind(DatabaseService::class, [
+            '@class' => DatabaseService::class,
+            '@constructor' => [
+                'config' => [
+                    'host' => 'localhost',
+                    'name' => 'testdb'
+                ]
+            ]
+        ]);
+        
+        $this->container->bind(UserService::class, [
+            '@class' => UserService::class,
+            '@constructor' => [
+                'logger' => LoggerInterface::class
+            ],
+            '@methods' => [
+                'setDatabase' => [DatabaseService::class],
+                'setConfig' => [['cache' => true]]
+            ]
+        ]);
+
+        // Récupération et tests
+        $userService = $this->container->get(UserService::class);
+        
+        $this->assertInstanceOf(UserService::class, $userService);
+        $this->assertInstanceOf(Logger::class, $userService->getLogger());
+        $this->assertInstanceOf(DatabaseService::class, $userService->getDatabase());
+        $this->assertTrue($userService->getConfig()['cache']);
+        $this->assertEquals('localhost', $userService->getDatabase()->getConfig()['host']);
     }
 
-    /**
-     * Retourne une instance de PostController::class avec les paramètres du constructeur définient
-     */
-    public function testInjectClassWithConstructorParameters ()
+    public function testSingletonInjection(): void
     {
-        $test = $this->service->get('class.params');
-        $this->assertInstanceOf(PostController::class, $test);
-        $this->assertEquals($test->getParamUn(), 'je suis le param un');
-        $this->assertEquals($test->getParamDeux(), 'je suis le param deux');
+        $this->container->singleton(ConfigService::class);
+        
+        $config1 = $this->container->get(ConfigService::class);
+        $config2 = $this->container->get(ConfigService::class);
+        
+        $this->assertSame($config1, $config2);
     }
 
-    /**
-     * Retourne une instance de ItemController::class avec les paramètres des méthodes définient
-     */
-    public function testInjectClassWithMethodsParameters ()
+    public function testAliasInjection(): void
     {
-        $test = $this->service->get('class.methods');
-        $this->assertInstanceOf(ItemController::class, $test);
-        $this->assertEquals($test->getName(), 'Doe');
-        $this->assertEquals($test->getSurname(), 'John');
-    }
+        $this->container->bind('logger', Logger::class);
+        $this->container->bind('config', [
+            'debug' => true,
+            'env' => 'test'
+        ]);
 
-    /**
-     * Closure Injection
-     */
-    public function testInjectCallableMethod ()
-    {
-        $test = $this->service->get('callable.key');
-        $this->assertTrue(is_callable($this->service->getServices()['callable.key']));
-        $this->assertEquals($test, 'je suis un callable');
-    }
-
-    /**
-     * Injection d'une classe comme singleton retourne toujours la même instance
-     */
-    public function testInjectClassToSingleton ()
-    {
-        $instance_1 = $this->service->get('singleton');
-        $instance_1->setKey('je suis le paramètre de l\'instance un');
-        $this->assertInstanceOf(SingController::class, $instance_1);
-        $instance_2 = $this->service->get('singleton');
-        // Recupération du paramètre de l'instance_1
-        $this->assertEquals($instance_2->getKey(), 'je suis le paramètre de l\'instance un');
-    }
-
-    /**
-     * Retourne une classe implémentant le pattern singleton
-     */
-    public function testInjectClassSingletonPatternn ()
-    {
-        $test = $this->service->get('patternn.singleton');
-        $this->assertEquals($test->getVar(), 'je suis le patternn Singleton');
-    }
-
-    /**
-     * Retourne une classe implémentant le pattern singleton en définissant le nom de la classe
-     * Résolution automatique d'une classe (patternn singleton) qui possède une méthode getInstance();
-     */
-    public function testInjectClassSingletonPatternnByClassName ()
-    {
-        $test = $this->service->get('patternn.singleton.name');
-        $this->assertEquals($test->getVar(), 'je suis le patternn Singleton');
-    }
-
-    /**
-     * Retourne une instance de classe Définit par son nom complet Injection\Core\ItemController
-     */
-    public function testInjectClassByFullQualifiedName ()
-    {
-        $this->assertInstanceOf(ItemController::class, $this->service->get('class.name'));
-    }
-
-    public function testInjectClassByInstance()
-    {
-        $inst_1 = $this->service->get('class.instance');
-        $inst_2 = $this->service->get('class.instance');
-        $result = ($inst_1 === $inst_2);
-        $this->assertTrue($result);
+        $logger = $this->container->get('logger');
+        $config = $this->container->get('config');
+        
+        $this->assertInstanceOf(Logger::class, $logger);
+        $this->assertTrue($config['debug']);
+        $this->assertEquals('test', $config['env']);
     }
 }

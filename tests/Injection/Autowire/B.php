@@ -1,18 +1,13 @@
 <?php
+declare(strict_types=1);
 
-namespace Injection\Autowire;
+namespace Tests\Injection\Autowire;
 
+use Tests\Injection\Autowire\D;
 
 class B
 {
-    /**
-     * @var D
-     */
-    public $d;
-
-    public function __construct(D $d)
-    {
-        $this->d = $d;
-    }
-
+    public function __construct(
+        public D $d
+    ) {}
 }

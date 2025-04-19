@@ -1,20 +1,14 @@
 <?php
-namespace Injection\Autowire;
+declare(strict_types=1);
+
+namespace Tests\Injection\Autowire;
+
+use Tests\Injection\Autowire\C;
 
 class A
 {
-    /**
-     * @var B
-     */
-    public $b;
-    /**
-     * @var C
-     */
-    public $c;
-
-    public function __construct(B $b, C $c)
-    {
-        $this->b = $b;
-        $this->c = $c;
-    }
+    public function __construct(
+        public B $b,
+        public C $c
+    ) {}
 }

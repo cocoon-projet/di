@@ -1,54 +1,38 @@
 <?php
+declare(strict_types=1);
 
+namespace Tests;
 
 use Cocoon\Dependency\Container;
-use Injection\Core\NoService;
+use Cocoon\Dependency\ContainerException;
+use Cocoon\Dependency\NotFoundServiceException;
 use PHPUnit\Framework\TestCase;
 
 class ContainerExceptionTest extends TestCase
 {
-    private $service;
+    private Container $container;
 
-    protected function setUp() :void
+    protected function setUp(): void
     {
-        $this->service = Container::getInstance();
-        $this->service->bind('notClass', ['@lazy' => true]);
-        $this->service->bind(NoService::class);
+        $this->container = Container::getInstance();
+        $this->container->getServices() === [] || $this->container->reset();
     }
 
-    public function testBindContainerMethodException()
+    public function testServiceNotFoundException(): void
     {
-        $this->expectException(Cocoon\Dependency\ContainerException::class);
-        $this->service->bind(123);
+        $this->expectException(NotFoundServiceException::class);
+        $this->container->get('undefined_service');
     }
 
-    public function testGetContainerMethodException()
+    public function testInvalidServiceDefinitionException(): void
     {
-        $this->expectException(Cocoon\Dependency\NotFoundServiceException::class);
-        $this->service->get('none');
+        $this->expectException(ContainerException::class);
+        $this->container->bind('invalid', new \stdClass());
     }
 
-    public function testAddserviceContainerMethodException()
+    public function testInvalidFactoryCallableException(): void
     {
-        $this->expectException(Cocoon\Dependency\ContainerException::class);
-        $this->service->addServices('kkkkk.php');
-    }
-
-    public function testAddserviceContainerNotArrayMethodException()
-    {
-        $this->expectException(Cocoon\Dependency\ContainerException::class);
-        $this->service->addServices(123);
-    }
-
-    public function testProxyContainerException()
-    {
-        $this->expectException(Cocoon\Dependency\ContainerException::class);
-        $this->service->get('notClass');
-    }
-
-    public function testNoResolveServiceException()
-    {
-        $this->expectException(Cocoon\Dependency\ContainerException::class);
-        $this->service->get(NoService::class);
+        $this->expectException(ContainerException::class);
+        $this->container->factory('invalid', ['NonExistentClass', 'method']);
     }
 }

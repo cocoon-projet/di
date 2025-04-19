@@ -1,24 +1,22 @@
 <?php
+declare(strict_types=1);
+
 namespace Cocoon\Dependency;
 
 /**
- * Facade DI class
- *
- * Class DI
- * @package Cocoon\Dependency
+ * Façade pour l'accès statique au container
  */
 class DI
 {
     /**
-     * Utilisation du container en méthodes statiques
+     * Délègue les appels statiques au container
      *
-     * @param string $name méthode du container
-     * @param mixed $arguments arguments des méthodes du container
+     * @param string $name
+     * @param array<mixed> $arguments
      * @return mixed
      */
-    public static function __callStatic($name, $arguments)
+    public static function __callStatic(string $name, array $arguments): mixed
     {
-        $instance = Container::getInstance();
-        return $instance->$name(...$arguments);
+        return Container::getInstance()->$name(...$arguments);
     }
 }

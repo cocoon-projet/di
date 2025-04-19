@@ -1,54 +1,50 @@
-## Méthodes injection
+# Méthodes d'Injection
 
-Vous pouvez aussi injecter des paramètres via les méthodes.
+## Types d'Injection Supportés
+
+### 1. Injection par Constructeur
+
 ```php
-<?php
-namespace App\Services;
-
-class A 
+class UserService
 {
-    public $b;
-    public $param;
-    
-    public function setB(B $b)
-    {
-        $this->b = $b;
-    }
-    
-    public function setParam($param)
-    {
-        $this->param = $param;
-    }
+    public function __construct(
+        private readonly UserRepository $repository,
+        private readonly LoggerInterface $logger
+    ) {}
 }
 ```
 
-```php
-<?php
-namespace App\Services;
+### 2. Injection par Méthode
 
-class B 
+```php
+class NewsletterService
 {
+    private MailerInterface $mailer;
+    private LoggerInterface $logger;
 
+    public function setMailer(MailerInterface $mailer): void
+    {
+        $this->mailer = $mailer;
+    }
+
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
+    }
 }
+
+// Configuration
+$container->bind(NewsletterService::class, [
+    '@methods' => [
+        'setMailer' => [MailerInterface::class],
+        'setLogger' => [LoggerInterface::class]
+    ]
+]);
 ```
-Utilisation
-```php
-<?php
-$di = Container::getInstance();
 
-// enregistrement de la class B
-$di->bind(B::class);
-// enregistrement de la classe A et ses dépendances via les méthodes
-$di->bind(A::class, ['@methods' => [
-                            'setB' => [B::class],
-                            'setParam' => ['je suis un paramètre']
-                            ]
-                    ]);
+## Bonnes Pratiques
 
-// Retourner le service
-$service = $di->get(A::class);
-
-var_dump($service instanceof App\Services\A); // true
-var_dump($service->b instanceof App\Services\B); // true
-var_dump($service->param === 'je suis un paramètre'); // true
-```
+1. Préférez l'injection par constructeur
+2. Utilisez l'injection par méthode pour les dépendances optionnelles
+3. Documentez les dépendances requises
+4. Respectez le principe d'inversion des dépendances

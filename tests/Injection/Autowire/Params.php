@@ -1,43 +1,37 @@
 <?php
+declare(strict_types=1);
 
-namespace Injection\Autowire;
-
+namespace Tests\Injection\Autowire;
 
 class Params
 {
-    public $name;
-    public $surname;
+    private string $name = '';
+    private string $surname = '';
 
-    public function __construct($name = null, $surname = null)
+    public function __construct(?string $name = null, ?string $surname = null)
     {
-        $this->name = $name;
-        $this->surname = $surname;
+        if ($name !== null) {
+            $this->name = $name;
+        }
+        if ($surname !== null) {
+            $this->surname = $surname;
+        }
     }
 
-    /**
-     * @return mixed
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param mixed $name
-     * @return Params
-     */
-    public function setName($name)
+    public function getSurname(): string
+    {
+        return $this->surname;
+    }
+
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSurname()
-    {
-        return $this->surname;
     }
 
     /**
