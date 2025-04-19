@@ -22,6 +22,7 @@ $container->make(UserService::class);
 
 // Configuration explicite
 $container->bind(UserService::class, [
+    '@class' => UserService::class,
     '@constructor' => [
         'repository' => UserRepository::class,
         'logger' => LoggerInterface::class,

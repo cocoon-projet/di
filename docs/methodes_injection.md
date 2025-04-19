@@ -35,6 +35,7 @@ class NewsletterService
 
 // Configuration
 $container->bind(NewsletterService::class, [
+    '@class' => NewsletterService::class,
     '@methods' => [
         'setMailer' => [MailerInterface::class],
         'setLogger' => [LoggerInterface::class]

@@ -235,45 +235,15 @@ $db = $container->get('db');
    - Les modifications des services nécessitent une recompilation
    - Le cache doit être vidé lors des mises à jour
 
-## Dépannage
-
-### Erreurs Courantes
-
-1. **Services non compilés**
-   ```php
-   try {
-       $container->get('service');
-   } catch (ContainerException $e) {
-       // Les services ne sont pas compilés
-       $container->compile();
-   }
-   ```
-
-2. **Problèmes de Permissions**
-   ```php
-   if (!is_writable($container->getCacheDir())) {
-       throw new RuntimeException('Le dossier de cache n\'est pas accessible en écriture');
-   }
-   ```
-
-3. **Cache Corrompu**
-   ```php
-   $container->clearCache();
-   $container->compile();
-   ```
 
 ## API Référence
 
 ### Méthodes Principales
 
-- `enableCache()`: Active le système de cache
-- `disableCache()`: Désactive le système de cache
+- `setCacheConfig(true, $dir,$basePath)`: Activation du cache ($basepath optionnel)
 - `compile()`: Compile les services
 - `loadCompiled()`: Charge les services compilés
-- `clearCache()`: Vide le cache
-- `setCacheDir(string $dir)`: Définit le dossier de cache
 - `getCacheDir()`: Retourne le dossier de cache
-- `isCacheEnabled()`: Vérifie si le cache est activé
 
 ## Exemples Avancés
 
@@ -305,7 +275,7 @@ $container->bind('service', [
 ]);
 ```
 
-### Injection Automatique
+### Injection par attribut
 
 ```php
 $container->bind('service', [
@@ -330,30 +300,3 @@ Le système de cache offre plusieurs avantages en termes de performance :
    - Pas de réflexion au runtime
    - Pas de résolution de dépendances au runtime
 
-## Maintenance
-
-### Nettoyage du Cache
-
-```php
-// Nettoyage manuel
-$container->clearCache();
-
-// Nettoyage automatique (à implémenter dans votre application)
-if ($needsCacheClear) {
-    $container->clearCache();
-    $container->compile();
-}
-```
-
-### Surveillance
-
-```php
-// Vérification de l'état du cache
-if ($container->isCacheEnabled()) {
-    $cacheFile = $container->getCacheDir() . '/CompiledServices.php';
-    if (file_exists($cacheFile)) {
-        $lastModified = filemtime($cacheFile);
-        // Vérifier si le cache est à jour
-    }
-}
-``` 

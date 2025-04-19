@@ -82,6 +82,7 @@ use Cocoon\Dependency\Container;
 $di = Container::getInstance();
 
 $di->bind(LazyClass::class, [
+    '@class' => Lazy::class,
     '@lazy' => true,
     '@constructor' => ['arg1', 'arg2']
     ]);

@@ -66,6 +66,8 @@ trait AutowireContainerTrait
                 return $instance->$method(...$this->resolveInjection($params, $vars));
             }
         }
+        
+        return $instance;
     }
 
     /**
