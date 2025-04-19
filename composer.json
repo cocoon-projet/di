@@ -2,6 +2,13 @@
     "name": "cocoon-projet/di",
     "description": "Container d'injection de dépendances moderne pour PHP 8.x",
     "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cocoon",
+            "email": "contact@cocoon.fr"
+        }
+    ],
     "require": {
         "php": "^8.0",
         "psr/container": "^2.0",
